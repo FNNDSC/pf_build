@@ -1,0 +1,112 @@
+
+= How to Run the pf_build Server Locally
+
+This document provides step-by-step instructions for setting up and running the pf_build server locally. Two modes are possible:
+
+* On the metal from a python virtual environment
+* Using a container
+
+== Prerequisites
+1. Install Python 3.12 or later.
+2. Install MongoDB.
+
+== Steps to Run the Server
+
+Running the server requires an environment variable called `GH_TOKEN` for authentication to github. Consult github documentation for information on generating a token. This token is connected to a github organization and allows this server to access that organization. The `GH_TOKEN` variable should contain the token data which is a long string of alphanumeric characters. 
+
+Assume the token is stored in a file:
+
+----
+export GH_FILE=/home/user/data/tokens/githubtoken.txt
+----
+
+Obviously adjust as required.
+
+Set an environment variable:
+
+----
+export GH_TOKEN=$(cat $GH_FILE)
+----
+
+=== On the metal 
+
+==== 1. One-time local setup
+
+To run the server locally, the overall approach is to clone the repo, create a python virtual environment, and install the dependencies and application. This is typically a one-time activity.
+
+==== 1.1. Clone the Repository
+Clone the repository to your local machine:
+----
+git clone https://github.com/FNNDSC/pf_build.git
+cd pf_build
+----
+
+==== 1.2. Create and activate a python virtual environment
+Create a +venv+ in the repo directory:
+
+----
+python -m venv venv
+----
+
+and activate it:
+
+----
+source venv/bin/activate
+----
+
+==== 1.3. Install Dependencies
+Install the required dependencies using `pip`:
+----
+pip install -r requirements.txt
+----
+
+==== 1.4. Install the Application in Editable Mode
+To ensure the application is available for `uvicorn`, install it in the current environment:
+----
+pip install -e .
+----
+
+==== 1.5. Run the WHAM Server
+
+Run the FastAPI server using `uvicorn`:
+----
+uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+----
+
+=== Using a container
+
+==== 1. Build the container for a local deployment
+
+----
+docker build -t local/pf_build .
+----
+
+==== 2. Run the container
+
+----
+docker run -p 8000:8000 -rm \
+       -e GH_TOKEN=$(cat $GH_FILE) local/pf_build
+----
+
+==== 3. For source code debugging, map the code into the built container:
+
+----
+docker run -p 8000:8000 -it --rm \
+       -e TERM=xterm-256color \
+       -e GH_TOKEN=$(cat $GH_FILE) \
+       -v $(pwd)/app:/app/app local/pf_build
+----
+
+=== 2. Start MongoDB
+Now, assuming the application and dependencies are setup in a local python virtual environment or running in a docker container, start MongoDB locally or using Docker Compose:
+----
+docker-compose up
+----
+
+=== Access the Application
+Open your browser and navigate to:
+
+- API Root: http://127.0.0.1:8000
+- Interactive API Docs: http://127.0.0.1:8000/docs
+
+

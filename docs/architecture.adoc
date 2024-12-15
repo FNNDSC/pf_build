@@ -1,0 +1,23 @@
+= pf_build Architecture Overview
+
+pf_build is designed as a modular, scalable, and maintainable application for AI model management.
+
+== Components
+- **FastAPI**: Framework for building RESTful APIs.
+- **MongoDB**: Database for storing user, task, and AI model data.
+- **Docker**: Used for containerized deployment.
+
+== Layers
+- **API Layer**: Exposes RESTful endpoints.
+- **Service Layer**: Contains business logic.
+- **Database Layer**: Interfaces with MongoDB using pfmongo.
+
+== Scalability
+- Stateless services allow horizontal scaling.
+- Database design supports sharding and replication.
+
+== Deployment
+- Local development uses Docker Compose.
+- Production deployments use Kubernetes or similar platforms.
+
+For a detailed architecture diagram, see future revisions of this document.

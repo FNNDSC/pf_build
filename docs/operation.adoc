@@ -1,0 +1,35 @@
+
+= pf_build Operational Overview
+
+When passed a set of user-defined bootstrap data for a new ChRIS plugin, `pf_build` performs several distinct steps in sequential order. The results of these steps is returned in a JSON payload to the caller. A top-level JSON boolean `status` variable denotes the overall success or failure of the entire workflow.
+
+== Bootstrap fields
+
+The `pf_build` bootstrap API endpoint accepts this python model:
+
+[source, python]
+----
+class BootstrapModel(BaseModel):
+    plugin_title: str = Field(..., description="The title of the plugin")
+    scriptname: str = Field(..., description="The script name for the plugin")
+    description: str = Field(
+        ..., max_length=4096, description="A brief description of the plugin"
+    )
+    organization: str = Field(
+        ..., description="The organization responsible for the plugin"
+    )
+    email: EmailStr = Field(..., description="The email of the author or maintainer")
+----
+
+Here, the `plugin_title` also doubles as the name of repository to create on github. By convention, ChRIS plugins typically start with a suffix `pl-`, although this is not mandatory.
+
+== Steps 
+- **Verify github repo uniqueness**: Check that a repo called `FNNDSC/<plugin_title>`  would be unique
+- **Check out plugin template**: Check out the ChRIS plugin template repo.
+- **Edit bootstrap.sh in template**: Edit the checked out `boostrap.sh` with the appropriate values 
+- **Execute boostrap.sh**: Execute the `boostrap.sh`
+
+== Detail responses
+
+=== Repo uniqueness
+The response from this step.

@@ -1,0 +1,16 @@
+fastapi
+uvicorn
+pymongo
+pfmongo
+
+pydantic[email]
+pydantic_settings
+
+pudb
+toml
+platformdirs
+loguru
+
+PyGithub
+GitPython
+

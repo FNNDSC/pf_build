@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pf_build"
+version = "0.1.0"
+description = "A FastAPI app to facilitate building python plugins for ChRIS"
+authors = [
+    {name = "Rudolph Pienaar", email = "rudolph.pienaar@childrens.harvard.edu"}
+]
+license = {text = "MIT"}
+readme = {file = "README.adoc", content-type = "text/x-asciidoc"}
+dynamic = ["dependencies"]
+
+[tool.setuptools.dynamic]
+dependencies = {file = "requirements.txt"}
+
+[project.urls]
+homepage = "https://github.com/FNNDSC/pf_build"
+repository = "https://github.com/FNNDSC/pf_build"

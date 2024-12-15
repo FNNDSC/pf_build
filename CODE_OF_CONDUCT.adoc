@@ -1,0 +1,12 @@
+= Code of Conduct
+
+As contributors and maintainers of this project, we pledge to respect all participants and foster a welcoming and inclusive community.
+
+== Our Standards
+- Be respectful of differing viewpoints.
+- Provide constructive feedback.
+- Avoid offensive language or behavior.
+
+== Enforcement
+Instances of abusive, harassing, or otherwise unacceptable behavior may be reported by contacting the project team at support@example.com. All complaints will be reviewed and addressed promptly.
+

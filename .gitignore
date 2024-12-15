@@ -1,0 +1,29 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+.venv/
+.env/
+env/
+
+# Build artifacts
+*.egg-info/
+dist/
+build/
+
+# Python environment files
+.python-version
+
+# Docker artifacts
+*.dockerignore
+
+# Editor configurations
+.vscode/
+.idea/
+.mypy_cache/
+
+# Operating system files
+.DS_Store
+Thumbs.db

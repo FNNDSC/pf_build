@@ -1,0 +1,8 @@
+cff-version: 1.2.0
+message: "If you use pf_build, please cite it as below."
+authors:
+  - family-names: "Pienaar"
+    given-names: "Rudolph"
+title: "pf_build: Web-based Holistic AI Manager"
+version: "0.1.0"
+date-released: "2024-12-05"

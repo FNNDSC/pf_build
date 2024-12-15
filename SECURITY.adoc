@@ -1,0 +1,17 @@
+= Security Policy
+
+We take security issues seriously. If you discover a vulnerability, please report it responsibly.
+
+== Reporting a Vulnerability
+To report a vulnerability:
+1. Email our security team at security@example.com.
+2. Include a detailed description of the issue and steps to reproduce it.
+
+== Supported Versions
+We currently support the following versions:
+- Version 0.1.x: Fully supported
+- Version 0.0.x: No longer supported
+
+== Response
+We will review your report promptly and work to address the issue. You will receive an acknowledgment within 48 hours.
+
