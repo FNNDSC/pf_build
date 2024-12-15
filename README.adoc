@@ -10,15 +10,18 @@ ChRIS plugins are mostly developed by ChRIS developers, and anecdotal evidence s
 
 Regardless of ChRIS per se, the artifacts created by this service are useful as python applications in their own right, with bundled `Dockerfile`, `requirements.txt` and `setup.py` for "free", allowing one stop turn key creation of a fully fledged generic python project, albeit with a slight ChRIS-opiniation.
 
-== Warning
-_Ease of use_ does not mitigate _complexity_, and similarly with (some) power comes (some) responsibility. For now, it is easily possible to pollute the FNNDSC github repo with auto-generated ChRIS application repos if this service is abused. We will monitor this carefully and might need to take reactive measures if this becomes problematic.
+== How To Run
+
+Consult the link:HOWTORUN.adoc[HOWTORUN] document for complete details on how to start an instance of the `pf_build` server. An important thing to keep in mind is that **the service needs to access github on behalf of some user**. This identity is passed to `pf_build` on startup via a github token stored in an environment variable. By default, all activity that `pf_build` will perform on github will be associated with that Personal Access Token (PAT).
+
+Each call to the service API endpoint, however, offers the option to pass an override token for that call. In this way the service can be instantiated with a default identity, but still offer users the ability to use their own PATs.
 
 == Workflow
 `pf_build` will:
 
-- Instantiate a new instance of the https://github.com/FNNDSC/python-chrisapp-template[ChRIS plugin template] on (by default the FNNDSC org on) github.
+- Instantiate a new instance of the https://github.com/FNNDSC/python-chrisapp-template[ChRIS plugin template].
 +
-Note that by default this will be created in the FNNDSC github organization by a bot called `fnndscghbot` and as such will be owned by that bot. Developers can provide their own github PAT (personal access token) instead, in which case this template will be instantiated to the organziation associated with the provided PAT. Instructions for creating a PAT is out of scope of this document, but interested readers can consult the https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens[ relevant documentation].
+Note that the github repo and activity will be associated with the user whose PAT was used to startup the service. Instructions for creating a PAT is out of scope of this document, but interested readers can consult the https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens[ relevant documentation].
 
 - Clone the instantiated template
 +
@@ -36,7 +39,7 @@ Once edited, `pf_build` will execute the `boostrap.sh` in the cloned repo.
 +
 Finally, `pf_build` will commit these changes back to github, resulting in a fully instantiated ChRIS plugin/application suitable for immediate checkout and further development.
 
-Providing a PAT in the call to `pf_build` will assure that the final repository is created and owned by the associated user. Using PATs are strongly encouraged and might become mandatory in future. However, for now and in the vein of "reducing barriers to entry", users can rely on the `fnndscghbot` to create, own, and manage application repos for them.
+Providing an explicit PAT in the call to `pf_build` is not required but might become the default in future.
 
 == Features
 - Simple/single API POST endpoint
@@ -44,12 +47,6 @@ Providing a PAT in the call to `pf_build` will assure that the final repository 
 - MongoDB integration using pfmongo
 - Dockerized deployment
 
-== Installation and Usage
-Refer to the link below for detailed setup and usage instructions:
-link:HOWTORUN.adoc[How to Run the pf_build Server Locally]
-
-== Overview
-Creating a ChRIS-plugin requires a set of steps that ultimately results in a github repository housing a fully functional ChRIS plugin skeleton.
 
 == Contributing
 We welcome contributions! Please see link:CONTRIBUTING.adoc[CONTRIBUTING] for guidelines. We adhere strictly to our link:CODE_OF_CONDUCT.adoc[CODE_OF_CONDUCT].
