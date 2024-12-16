@@ -1,0 +1,924 @@
+<<<<<<< HEAD
+||||||| parent of 54ceca6 (Update API documentation remove secrets)
+= API documentation
+:sectnums:
+
+This document provides an overview of the API, with example calls and returns. While only one API endpoint exists, several consecutive steps are executed by `pf_build`:
+
+.  repoExists
+.  repoCreateInitial
+.  gitClone
+.  shellEdit
+.  shellExec
+.  gitCommit
+
+see link:README.adoc[here] for a more detailed overview of these individual steps. By default, all these steps are executed in order when the API endpoint is accessed. However, it is also possible to call each step separately. In this case, the service will attempt to execute the step without consideration if prerequisite steps have been called.
+
+In this document, assume we are using the service to create a new ChRIS plugin with the following meta data:
+
+[json]
+----
+{
+  "plugin_title": "pl-surfaceCurv",
+  "scriptname": "surfaceCurv",
+  "description": "A ChRIS DS plugin to process a brain surface mesh and analyze curvature",
+  "organization": "FNNDSC",
+  "email": "dev@fnndsc.org"
+}
+----
+
+
+The following sections document a calling/response exemplar for each step.
+
+== repoExists
+
+=== call
+
+[bash]
+----
+curl -X 'POST' \
+  'http://localhost:8000/api/vi/boostrap/?step=repoExists' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "plugin_title": "pl-surfaceCurv",
+  "scriptname": "surfaceCurv",
+  "description": "A ChRIS DS plugin to process a brain surface mesh and analyze curvature",
+  "organization": "FNNDSC",
+  "email": "dev@fnndsc.org"
+}'
+----
+
+=== response
+
+[json]
+----
+{
+  "TIMESTAMP_FORMAT": "%Y-%m-%d_%H:%M:%S",
+  "status": true,
+  "message": "All steps completed successfully",
+  "starttime": "2024-12-16_17:17:41",
+  "endtime": "2024-12-16_17:17:41",
+  "repoExists": {
+    "TIMESTAMP_FORMAT": "%Y-%m-%d_%H:%M:%S",
+    "status": true,
+    "message": "Repository pl-surfaceCurv is available: 404 {\"message\": \"Not Found\", \"documentation_url\": \"https://docs.github.com/rest/repos/repos#get-a-repository\", \"status\": \"404\"}",
+    "starttime": "2024-12-16_17:17:41",
+    "endtime": "2024-12-16_17:17:41",
+    "repo_name": "pl-surfaceCurv",
+    "exists": false,
+    "org_name": "FNNDSC"
+  },
+  "repoCreateInitial": null,
+  "gitClone": null,
+  "shellEdit": null,
+  "shellExec": null,
+  "gitCommit": null
+}
+----
+
+== repoCreateInitial
+
+=== call
+
+[bash]
+----
+curl -X 'POST' \
+  'http://localhost:8000/api/vi/boostrap/?step=repoCreateInitial' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "plugin_title": "pl-surfaceCurv",
+  "scriptname": "surfaceCurv",
+  "description": "A ChRIS DS plugin to process a brain surface mesh and analyze curvature",
+  "organization": "FNNDSC",
+  "email": "dev@fnndsc.org"
+}'
+----
+
+=== response
+
+[json]
+----
+{
+  "TIMESTAMP_FORMAT": "%Y-%m-%d_%H:%M:%S",
+  "status": true,
+  "message": "All steps completed successfully",
+  "starttime": "2024-12-16_17:19:00",
+  "endtime": "2024-12-16_17:19:02",
+  "repoExists": null,
+  "repoCreateInitial": {
+    "TIMESTAMP_FORMAT": "%Y-%m-%d_%H:%M:%S",
+    "status": true,
+    "message": "Repository pl-surfaceCurv created successfully from template",
+    "starttime": "2024-12-16_17:19:00",
+    "endtime": "2024-12-16_17:19:02",
+    "repo_name": "pl-surfaceCurv",
+    "repo_created": false,
+    "repo_url": null
+  },
+  "gitClone": null,
+  "shellEdit": null,
+  "shellExec": null,
+  "gitCommit": null
+}
+----
+
+== gitClone 
+
+=== call
+
+[bash]
+----
+curl -X 'POST' \
+  'http://localhost:8000/api/vi/boostrap/?step=gitClone' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "plugin_title": "pl-surfaceCurv",
+  "scriptname": "surfaceCurv",
+  "description": "A ChRIS DS plugin to process a brain surface mesh and analyze curvature",
+  "organization": "FNNDSC",
+  "email": "dev@fnndsc.org"
+}'
+----
+
+=== response
+
+[json]
+----
+{
+  "TIMESTAMP_FORMAT": "%Y-%m-%d_%H:%M:%S",
+  "status": true,
+  "message": "All steps completed successfully",
+  "starttime": "2024-12-16_17:19:52",
+  "endtime": "2024-12-16_17:19:53",
+  "repoExists": null,
+  "repoCreateInitial": null,
+  "gitClone": {
+    "TIMESTAMP_FORMAT": "%Y-%m-%d_%H:%M:%S",
+    "status": true,
+    "message": "Repository cloned successfully to /home/appuser/repositories/pl-surfaceCurv",
+    "starttime": "2024-12-16_17:19:52",
+    "endtime": "2024-12-16_17:19:53",
+    "details": {
+      "TIMESTAMP_FORMAT": "%Y-%m-%d_%H:%M:%S",
+      "status": true,
+      "message": "Successful clone",
+      "starttime": "",
+      "endtime": "",
+      "repo_name": "pl-surfaceCurv",
+      "repo_url": "https://github.com/FNNDSC/pl-surfaceCurv.git",
+      "clone_path": "/home/appuser/repositories/pl-surfaceCurv",
+      "branch": "main"
+    }
+  },
+  "shellEdit": null,
+  "shellExec": null,
+  "gitCommit": null
+}
+----
+
+== shellEdit 
+
+=== call
+
+[bash]
+----
+curl -X 'POST' \
+  'http://localhost:8000/api/vi/boostrap/?step=shellEdit' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "plugin_title": "pl-surfaceCurv",
+  "scriptname": "surfaceCurv",
+  "description": "A ChRIS DS plugin to process a brain surface mesh and analyze curvature",
+  "organization": "FNNDSC",
+  "email": "dev@fnndsc.org"
+}'
+----
+
+=== response
+
+[json]
+----
+{
+  "TIMESTAMP_FORMAT": "%Y-%m-%d_%H:%M:%S",
+  "status": true,
+  "message": "All steps completed successfully",
+  "starttime": "2024-12-16_17:20:25",
+  "endtime": "2024-12-16_17:20:25",
+  "repoExists": null,
+  "repoCreateInitial": null,
+  "gitClone": null,
+  "shellEdit": {
+    "TIMESTAMP_FORMAT": "%Y-%m-%d_%H:%M:%S",
+    "status": true,
+    "message": "Shell script edited successfully",
+    "starttime": "2024-12-16_17:20:25",
+    "endtime": "2024-12-16_17:20:25",
+    "script_path": "/home/appuser/repositories/pl-surfaceCurv/bootstrap.sh",
+    "changes_made": [
+      "PLUGIN_TITLE='pl-surfaceCurv'\n",
+      "SCRIPT_NAME='surfaceCurv'\n",
+      "DESCRIPTION='A ChRIS DS plugin to process a brain surface mesh and analyze curvature'\n",
+      "EMAIL='dev@fnndsc.org'\n",
+      "READY=yes\n"
+    ]
+  },
+  "shellExec": null,
+  "gitCommit": null
+}
+----
+
+== shellExec 
+
+=== call
+
+[bash]
+----
+curl -X 'POST' \
+  'http://localhost:8000/api/vi/boostrap/?step=shellExec' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "plugin_title": "pl-surfaceCurv",
+  "scriptname": "surfaceCurv",
+  "description": "A ChRIS DS plugin to process a brain surface mesh and analyze curvature",
+  "organization": "FNNDSC",
+  "email": "dev@fnndsc.org"
+}'
+----
+
+=== response
+
+[json]
+----
+{
+  "TIMESTAMP_FORMAT": "%Y-%m-%d_%H:%M:%S",
+  "status": true,
+  "message": "All steps completed successfully",
+  "starttime": "2024-12-16_17:21:06",
+  "endtime": "2024-12-16_17:21:14",
+  "repoExists": null,
+  "repoCreateInitial": null,
+  "gitClone": null,
+  "shellEdit": null,
+  "shellExec": {
+    "TIMESTAMP_FORMAT": "%Y-%m-%d_%H:%M:%S",
+    "status": true,
+    "message": "Successfully executed bootstrap.sh",
+    "starttime": "2024-12-16_17:21:06",
+    "endtime": "2024-12-16_17:21:14",
+    "result": {
+      "stdout": "[main ce29d48] Configure python-chrisapp-template/bootstrap.sh\n 1 file changed, 5 insertions(+), 5 deletions(-)\n       _                        __               _____                  \n      | |                      / _|             /  __ \\                 \n _ __ | |______ ___ _   _ _ __| |_ __ _  ___ ___| /  \\/_   _ _ ____   __\n| '_ \\| |______/ __| | | | '__|  _/ _` |/ __/ _ \\ |   | | | | '__\\ \\ / /\n| |_) | |      \\__ \\ |_| | |  | || (_| | (_|  __/ \\__/\\ |_| | |   \\ V / \n| .__/|_|      |___/\\__,_|_|  |_| \\__,_|\\___\\___|\\____/\\__,_|_|    \\_/  \n| |                                                                     \n|_|                                                                     \nCollecting chris_plugin==0.4.0 (from -r requirements.txt (line 1))\n  Using cached chris_plugin-0.4.0-py3-none-any.whl.metadata (3.0 kB)\nUsing cached chris_plugin-0.4.0-py3-none-any.whl (21 kB)\nInstalling collected packages: chris_plugin\nSuccessfully installed chris_plugin-0.4.0\nObtaining file:///home/appuser/repositories/pl-surfaceCurv\n  Installing build dependencies: started\n  Installing build dependencies: finished with status 'done'\n  Checking if build backend supports build_editable: started\n  Checking if build backend supports build_editable: finished with status 'done'\n  Getting requirements to build editable: started\n  Getting requirements to build editable: finished with status 'done'\n  Preparing editable metadata (pyproject.toml): started\n  Preparing editable metadata (pyproject.toml): finished with status 'done'\nRequirement already satisfied: chris_plugin in ./venv/lib/python3.12/site-packages (from surfaceCurv==1.0.0) (0.4.0)\nCollecting pytest~=7.1 (from surfaceCurv==1.0.0)\n  Using cached pytest-7.4.4-py3-none-any.whl.metadata (7.9 kB)\nCollecting iniconfig (from pytest~=7.1->surfaceCurv==1.0.0)\n  Using cached iniconfig-2.0.0-py3-none-any.whl.metadata (2.6 kB)\nCollecting packaging (from pytest~=7.1->surfaceCurv==1.0.0)\n  Using cached packaging-24.2-py3-none-any.whl.metadata (3.2 kB)\nCollecting pluggy<2.0,>=0.12 (from pytest~=7.1->surfaceCurv==1.0.0)\n  Using cached pluggy-1.5.0-py3-none-any.whl.metadata (4.8 kB)\nUsing cached pytest-7.4.4-py3-none-any.whl (325 kB)\nUsing cached pluggy-1.5.0-py3-none-any.whl (20 kB)\nUsing cached iniconfig-2.0.0-py3-none-any.whl (5.9 kB)\nUsing cached packaging-24.2-py3-none-any.whl (65 kB)\nBuilding wheels for collected packages: surfaceCurv\n  Building editable for surfaceCurv (pyproject.toml): started\n  Building editable for surfaceCurv (pyproject.toml): finished with status 'done'\n  Created wheel for surfaceCurv: filename=surfaceCurv-1.0.0-0.editable-py3-none-any.whl size=4048 sha256=9872a92177d4388485e078f3ae9eb36397817808c18010d113b8d5add7e455ff\n  Stored in directory: /tmp/pip-ephem-wheel-cache-zxe3givv/wheels/a7/95/35/c5a03f2117e915442f738db505b7d918819e6a4bb13edf3323\nSuccessfully built surfaceCurv\nInstalling collected packages: surfaceCurv, pluggy, packaging, iniconfig, pytest\nSuccessfully installed iniconfig-2.0.0 packaging-24.2 pluggy-1.5.0 pytest-7.4.4 surfaceCurv-1.0.0\nFor more information on how to get started, see README.md\nremoved '/home/appuser/repositories/pl-surfaceCurv/bootstrap.sh'\n",
+      "stderr": "+ git commit -m 'Configure python-chrisapp-template/bootstrap.sh' -- /home/appuser/repositories/pl-surfaceCurv/bootstrap.sh\n+ python -m venv venv\n+ source venv/bin/activate\n+ pip install -r requirements.txt\n+ pip install -e '.[dev]'\n\n✨Done!✨\n\nTo undo these actions and start over, run:\n\n\tgit reset --hard\n\tgit clean -df\n\trm -rf venv *.egg-info\n\tgit reset 'HEAD^'\n\nActivate the Python virtual environment by running:\n\n\tsource venv/bin/activate\n\nSave these changes by running:\n\n\tgit add -A && git commit -m \"Run bootstrap.sh\"\n\n+ rm -v /home/appuser/repositories/pl-surfaceCurv/bootstrap.sh\n",
+      "cmd": "bash /home/appuser/repositories/pl-surfaceCurv/bootstrap.sh",
+      "cwd": "/app",
+      "returncode": 0,
+      "script": null,
+      "uid": null
+    }
+  },
+  "gitCommit": null
+}
+----
+
+== gitCommit 
+
+=== call
+
+[bash]
+----
+curl -X 'POST' \
+  'http://localhost:8000/api/vi/boostrap/?step=gitCommit' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "plugin_title": "pl-surfaceCurv",
+  "scriptname": "surfaceCurv",
+  "description": "A ChRIS DS plugin to process a brain surface mesh and analyze curvature",
+  "organization": "FNNDSC",
+  "email": "dev@fnndsc.org"
+}'
+----
+
+=== response
+
+[json]
+----
+{
+  "TIMESTAMP_FORMAT": "%Y-%m-%d_%H:%M:%S",
+  "status": true,
+  "message": "All steps completed successfully",
+  "starttime": "2024-12-16_17:22:29",
+  "endtime": "2024-12-16_17:22:30",
+  "repoExists": null,
+  "repoCreateInitial": null,
+  "gitClone": null,
+  "shellEdit": null,
+  "shellExec": null,
+  "gitCommit": {
+    "TIMESTAMP_FORMAT": "%Y-%m-%d_%H:%M:%S",
+    "status": true,
+    "message": "Changes committed and pushed to pl-surfaceCurv.",
+    "starttime": "2024-12-16_17:22:29",
+    "endtime": "2024-12-16_17:22:30",
+    "details": {
+      "TIMESTAMP_FORMAT": "%Y-%m-%d_%H:%M:%S",
+      "status": true,
+      "message": "Successful commit",
+      "starttime": "",
+      "endtime": "",
+      "repo_name": "pl-surfaceCurv",
+      "repo_url": "https://fnndscghbot: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@github.com/FNNDSC/pl-surfaceCurv.git",
+      "clone_path": "/home/appuser/repositories/pl-surfaceCurv",
+      "branch": "main"
+    }
+  }
+}
+----
+
+== all
+
+All the above steps can be request by passing the `step=all` query parameter:
+
+=== call
+
+[bash]
+----
+curl -X 'POST' \
+  'http://localhost:8000/api/vi/boostrap/?step=all' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "plugin_title": "pl-surfaceCurv",
+  "scriptname": "surfaceCurv",
+  "description": "A ChRIS DS plugin to process a brain surface mesh and analyze curvature",
+  "organization": "FNNDSC",
+  "email": "dev@fnndsc.org"
+}'
+----
+
+=== response
+
+[json]
+----
+{
+  "TIMESTAMP_FORMAT": "%Y-%m-%d_%H:%M:%S",
+  "status": true,
+  "message": "All steps completed successfully",
+  "starttime": "2024-12-16_17:27:36",
+  "endtime": "2024-12-16_17:27:52",
+  "repoExists": {
+    "TIMESTAMP_FORMAT": "%Y-%m-%d_%H:%M:%S",
+    "status": true,
+    "message": "Repository pl-surfaceCurv is available: 404 {\"message\": \"Not Found\", \"documentation_url\": \"https://docs.github.com/rest/repos/repos#get-a-repository\", \"status\": \"404\"}",
+    "starttime": "2024-12-16_17:27:36",
+    "endtime": "2024-12-16_17:27:37",
+    "repo_name": "pl-surfaceCurv",
+    "exists": false,
+    "org_name": "FNNDSC"
+  },
+  "repoCreateInitial": {
+    "TIMESTAMP_FORMAT": "%Y-%m-%d_%H:%M:%S",
+    "status": true,
+    "message": "Repository pl-surfaceCurv created successfully from template",
+    "starttime": "2024-12-16_17:27:37",
+    "endtime": "2024-12-16_17:27:40",
+    "repo_name": "pl-surfaceCurv",
+    "repo_created": false,
+    "repo_url": null
+  },
+  "gitClone": {
+    "TIMESTAMP_FORMAT": "%Y-%m-%d_%H:%M:%S",
+    "status": true,
+    "message": "Repository cloned successfully to /home/appuser/repositories/pl-surfaceCurv",
+    "starttime": "2024-12-16_17:27:40",
+    "endtime": "2024-12-16_17:27:41",
+    "details": {
+      "TIMESTAMP_FORMAT": "%Y-%m-%d_%H:%M:%S",
+      "status": true,
+      "message": "Successful clone",
+      "starttime": "",
+      "endtime": "",
+      "repo_name": "pl-surfaceCurv",
+      "repo_url": "https://github.com/FNNDSC/pl-surfaceCurv.git",
+      "clone_path": "/home/appuser/repositories/pl-surfaceCurv",
+      "branch": "main"
+    }
+  },
+  "shellEdit": {
+    "TIMESTAMP_FORMAT": "%Y-%m-%d_%H:%M:%S",
+    "status": true,
+    "message": "Shell script edited successfully",
+    "starttime": "2024-12-16_17:27:41",
+    "endtime": "2024-12-16_17:27:41",
+    "script_path": "/home/appuser/repositories/pl-surfaceCurv/bootstrap.sh",
+    "changes_made": [
+      "PLUGIN_TITLE='pl-surfaceCurv'\n",
+      "SCRIPT_NAME='surfaceCurv'\n",
+      "DESCRIPTION='A ChRIS DS plugin to process a brain surface mesh and analyze curvature'\n",
+      "EMAIL='dev@fnndsc.org'\n",
+      "READY=yes\n"
+    ]
+  },
+  "shellExec": {
+    "TIMESTAMP_FORMAT": "%Y-%m-%d_%H:%M:%S",
+    "status": true,
+    "message": "Successfully executed bootstrap.sh",
+    "starttime": "2024-12-16_17:27:41",
+    "endtime": "2024-12-16_17:27:51",
+    "result": {
+      "stdout": "[main 31442ef] Configure python-chrisapp-template/bootstrap.sh\n 1 file changed, 5 insertions(+), 5 deletions(-)\n       _                        __               _____                  \n      | |                      / _|             /  __ \\                 \n _ __ | |______ ___ _   _ _ __| |_ __ _  ___ ___| /  \\/_   _ _ ____   __\n| '_ \\| |______/ __| | | | '__|  _/ _` |/ __/ _ \\ |   | | | | '__\\ \\ / /\n| |_) | |      \\__ \\ |_| | |  | || (_| | (_|  __/ \\__/\\ |_| | |   \\ V / \n| .__/|_|      |___/\\__,_|_|  |_| \\__,_|\\___\\___|\\____/\\__,_|_|    \\_/  \n| |                                                                     \n|_|                                                                     \nCollecting chris_plugin==0.4.0 (from -r requirements.txt (line 1))\n  Downloading chris_plugin-0.4.0-py3-none-any.whl.metadata (3.0 kB)\nDownloading chris_plugin-0.4.0-py3-none-any.whl (21 kB)\nInstalling collected packages: chris_plugin\nSuccessfully installed chris_plugin-0.4.0\nObtaining file:///home/appuser/repositories/pl-surfaceCurv\n  Installing build dependencies: started\n  Installing build dependencies: finished with status 'done'\n  Checking if build backend supports build_editable: started\n  Checking if build backend supports build_editable: finished with status 'done'\n  Getting requirements to build editable: started\n  Getting requirements to build editable: finished with status 'done'\n  Preparing editable metadata (pyproject.toml): started\n  Preparing editable metadata (pyproject.toml): finished with status 'done'\nRequirement already satisfied: chris_plugin in ./venv/lib/python3.12/site-packages (from surfaceCurv==1.0.0) (0.4.0)\nCollecting pytest~=7.1 (from surfaceCurv==1.0.0)\n  Downloading pytest-7.4.4-py3-none-any.whl.metadata (7.9 kB)\nCollecting iniconfig (from pytest~=7.1->surfaceCurv==1.0.0)\n  Downloading iniconfig-2.0.0-py3-none-any.whl.metadata (2.6 kB)\nCollecting packaging (from pytest~=7.1->surfaceCurv==1.0.0)\n  Downloading packaging-24.2-py3-none-any.whl.metadata (3.2 kB)\nCollecting pluggy<2.0,>=0.12 (from pytest~=7.1->surfaceCurv==1.0.0)\n  Downloading pluggy-1.5.0-py3-none-any.whl.metadata (4.8 kB)\nDownloading pytest-7.4.4-py3-none-any.whl (325 kB)\nDownloading pluggy-1.5.0-py3-none-any.whl (20 kB)\nDownloading iniconfig-2.0.0-py3-none-any.whl (5.9 kB)\nDownloading packaging-24.2-py3-none-any.whl (65 kB)\nBuilding wheels for collected packages: surfaceCurv\n  Building editable for surfaceCurv (pyproject.toml): started\n  Building editable for surfaceCurv (pyproject.toml): finished with status 'done'\n  Created wheel for surfaceCurv: filename=surfaceCurv-1.0.0-0.editable-py3-none-any.whl size=4048 sha256=820a623f7ae6f9a53cfcef8d2fbe3f9fed58fd544c95f950aaa2de38130a4452\n  Stored in directory: /tmp/pip-ephem-wheel-cache-6nvr38g5/wheels/a7/95/35/c5a03f2117e915442f738db505b7d918819e6a4bb13edf3323\nSuccessfully built surfaceCurv\nInstalling collected packages: surfaceCurv, pluggy, packaging, iniconfig, pytest\nSuccessfully installed iniconfig-2.0.0 packaging-24.2 pluggy-1.5.0 pytest-7.4.4 surfaceCurv-1.0.0\nFor more information on how to get started, see README.md\nremoved '/home/appuser/repositories/pl-surfaceCurv/bootstrap.sh'\n",
+      "stderr": "+ git commit -m 'Configure python-chrisapp-template/bootstrap.sh' -- /home/appuser/repositories/pl-surfaceCurv/bootstrap.sh\n+ python -m venv venv\n+ source venv/bin/activate\n+ pip install -r requirements.txt\n+ pip install -e '.[dev]'\n\n✨Done!✨\n\nTo undo these actions and start over, run:\n\n\tgit reset --hard\n\tgit clean -df\n\trm -rf venv *.egg-info\n\tgit reset 'HEAD^'\n\nActivate the Python virtual environment by running:\n\n\tsource venv/bin/activate\n\nSave these changes by running:\n\n\tgit add -A && git commit -m \"Run bootstrap.sh\"\n\n+ rm -v /home/appuser/repositories/pl-surfaceCurv/bootstrap.sh\n",
+      "cmd": "bash /home/appuser/repositories/pl-surfaceCurv/bootstrap.sh",
+      "cwd": "/app",
+      "returncode": 0,
+      "script": null,
+      "uid": null
+    }
+  },
+  "gitCommit": {
+    "TIMESTAMP_FORMAT": "%Y-%m-%d_%H:%M:%S",
+    "status": true,
+    "message": "Changes committed and pushed to pl-surfaceCurv.",
+    "starttime": "2024-12-16_17:27:51",
+    "endtime": "2024-12-16_17:27:52",
+    "details": {
+      "TIMESTAMP_FORMAT": "%Y-%m-%d_%H:%M:%S",
+      "status": true,
+      "message": "Successful commit",
+      "starttime": "",
+      "endtime": "",
+      "repo_name": "pl-surfaceCurv",
+      "repo_url": "https://fnndscghbot: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@github.com/FNNDSC/pl-surfaceCurv.git",
+      "clone_path": "/home/appuser/repositories/pl-surfaceCurv",
+      "branch": "main"
+    }
+  }
+}
+----
+
+=======
+= API documentation
+:sectnums:
+
+This document provides an overview of the API, with example calls and returns. While only one API endpoint exists, several consecutive steps are executed by `pf_build`:
+
+.  repoExists
+.  repoCreateInitial
+.  gitClone
+.  shellEdit
+.  shellExec
+.  gitCommit
+
+see link:README.adoc[here] for a more detailed overview of these individual steps. By default, all these steps are executed in order when the API endpoint is accessed. However, it is also possible to call each step separately. In this case, the service will attempt to execute the step without consideration if prerequisite steps have been called.
+
+In this document, assume we are using the service to create a new ChRIS plugin with the following meta data:
+
+[json]
+----
+{
+  "plugin_title": "pl-surfaceCurv",
+  "scriptname": "surfaceCurv",
+  "description": "A ChRIS DS plugin to process a brain surface mesh and analyze curvature",
+  "organization": "FNNDSC",
+  "email": "dev@fnndsc.org"
+}
+----
+
+
+The following sections document a calling/response exemplar for each step.
+
+== repoExists
+
+=== call
+
+[bash]
+----
+curl -X 'POST' \
+  'http://localhost:8000/api/vi/boostrap/?step=repoExists' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "plugin_title": "pl-surfaceCurv",
+  "scriptname": "surfaceCurv",
+  "description": "A ChRIS DS plugin to process a brain surface mesh and analyze curvature",
+  "organization": "FNNDSC",
+  "email": "dev@fnndsc.org"
+}'
+----
+
+=== response
+
+[json]
+----
+{
+  "TIMESTAMP_FORMAT": "%Y-%m-%d_%H:%M:%S",
+  "status": true,
+  "message": "All steps completed successfully",
+  "starttime": "2024-12-16_17:17:41",
+  "endtime": "2024-12-16_17:17:41",
+  "repoExists": {
+    "TIMESTAMP_FORMAT": "%Y-%m-%d_%H:%M:%S",
+    "status": true,
+    "message": "Repository pl-surfaceCurv is available: 404 {\"message\": \"Not Found\", \"documentation_url\": \"https://docs.github.com/rest/repos/repos#get-a-repository\", \"status\": \"404\"}",
+    "starttime": "2024-12-16_17:17:41",
+    "endtime": "2024-12-16_17:17:41",
+    "repo_name": "pl-surfaceCurv",
+    "exists": false,
+    "org_name": "FNNDSC"
+  },
+  "repoCreateInitial": null,
+  "gitClone": null,
+  "shellEdit": null,
+  "shellExec": null,
+  "gitCommit": null
+}
+----
+
+== repoCreateInitial
+
+=== call
+
+[bash]
+----
+curl -X 'POST' \
+  'http://localhost:8000/api/vi/boostrap/?step=repoCreateInitial' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "plugin_title": "pl-surfaceCurv",
+  "scriptname": "surfaceCurv",
+  "description": "A ChRIS DS plugin to process a brain surface mesh and analyze curvature",
+  "organization": "FNNDSC",
+  "email": "dev@fnndsc.org"
+}'
+----
+
+=== response
+
+[json]
+----
+{
+  "TIMESTAMP_FORMAT": "%Y-%m-%d_%H:%M:%S",
+  "status": true,
+  "message": "All steps completed successfully",
+  "starttime": "2024-12-16_17:19:00",
+  "endtime": "2024-12-16_17:19:02",
+  "repoExists": null,
+  "repoCreateInitial": {
+    "TIMESTAMP_FORMAT": "%Y-%m-%d_%H:%M:%S",
+    "status": true,
+    "message": "Repository pl-surfaceCurv created successfully from template",
+    "starttime": "2024-12-16_17:19:00",
+    "endtime": "2024-12-16_17:19:02",
+    "repo_name": "pl-surfaceCurv",
+    "repo_created": false,
+    "repo_url": null
+  },
+  "gitClone": null,
+  "shellEdit": null,
+  "shellExec": null,
+  "gitCommit": null
+}
+----
+
+== gitClone 
+
+=== call
+
+[bash]
+----
+curl -X 'POST' \
+  'http://localhost:8000/api/vi/boostrap/?step=gitClone' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "plugin_title": "pl-surfaceCurv",
+  "scriptname": "surfaceCurv",
+  "description": "A ChRIS DS plugin to process a brain surface mesh and analyze curvature",
+  "organization": "FNNDSC",
+  "email": "dev@fnndsc.org"
+}'
+----
+
+=== response
+
+[json]
+----
+{
+  "TIMESTAMP_FORMAT": "%Y-%m-%d_%H:%M:%S",
+  "status": true,
+  "message": "All steps completed successfully",
+  "starttime": "2024-12-16_17:19:52",
+  "endtime": "2024-12-16_17:19:53",
+  "repoExists": null,
+  "repoCreateInitial": null,
+  "gitClone": {
+    "TIMESTAMP_FORMAT": "%Y-%m-%d_%H:%M:%S",
+    "status": true,
+    "message": "Repository cloned successfully to /home/appuser/repositories/pl-surfaceCurv",
+    "starttime": "2024-12-16_17:19:52",
+    "endtime": "2024-12-16_17:19:53",
+    "details": {
+      "TIMESTAMP_FORMAT": "%Y-%m-%d_%H:%M:%S",
+      "status": true,
+      "message": "Successful clone",
+      "starttime": "",
+      "endtime": "",
+      "repo_name": "pl-surfaceCurv",
+      "repo_url": "https://github.com/FNNDSC/pl-surfaceCurv.git",
+      "clone_path": "/home/appuser/repositories/pl-surfaceCurv",
+      "branch": "main"
+    }
+  },
+  "shellEdit": null,
+  "shellExec": null,
+  "gitCommit": null
+}
+----
+
+== shellEdit 
+
+=== call
+
+[bash]
+----
+curl -X 'POST' \
+  'http://localhost:8000/api/vi/boostrap/?step=shellEdit' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "plugin_title": "pl-surfaceCurv",
+  "scriptname": "surfaceCurv",
+  "description": "A ChRIS DS plugin to process a brain surface mesh and analyze curvature",
+  "organization": "FNNDSC",
+  "email": "dev@fnndsc.org"
+}'
+----
+
+=== response
+
+[json]
+----
+{
+  "TIMESTAMP_FORMAT": "%Y-%m-%d_%H:%M:%S",
+  "status": true,
+  "message": "All steps completed successfully",
+  "starttime": "2024-12-16_17:20:25",
+  "endtime": "2024-12-16_17:20:25",
+  "repoExists": null,
+  "repoCreateInitial": null,
+  "gitClone": null,
+  "shellEdit": {
+    "TIMESTAMP_FORMAT": "%Y-%m-%d_%H:%M:%S",
+    "status": true,
+    "message": "Shell script edited successfully",
+    "starttime": "2024-12-16_17:20:25",
+    "endtime": "2024-12-16_17:20:25",
+    "script_path": "/home/appuser/repositories/pl-surfaceCurv/bootstrap.sh",
+    "changes_made": [
+      "PLUGIN_TITLE='pl-surfaceCurv'\n",
+      "SCRIPT_NAME='surfaceCurv'\n",
+      "DESCRIPTION='A ChRIS DS plugin to process a brain surface mesh and analyze curvature'\n",
+      "EMAIL='dev@fnndsc.org'\n",
+      "READY=yes\n"
+    ]
+  },
+  "shellExec": null,
+  "gitCommit": null
+}
+----
+
+== shellExec 
+
+=== call
+
+[bash]
+----
+curl -X 'POST' \
+  'http://localhost:8000/api/vi/boostrap/?step=shellExec' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "plugin_title": "pl-surfaceCurv",
+  "scriptname": "surfaceCurv",
+  "description": "A ChRIS DS plugin to process a brain surface mesh and analyze curvature",
+  "organization": "FNNDSC",
+  "email": "dev@fnndsc.org"
+}'
+----
+
+=== response
+
+[json]
+----
+{
+  "TIMESTAMP_FORMAT": "%Y-%m-%d_%H:%M:%S",
+  "status": true,
+  "message": "All steps completed successfully",
+  "starttime": "2024-12-16_17:21:06",
+  "endtime": "2024-12-16_17:21:14",
+  "repoExists": null,
+  "repoCreateInitial": null,
+  "gitClone": null,
+  "shellEdit": null,
+  "shellExec": {
+    "TIMESTAMP_FORMAT": "%Y-%m-%d_%H:%M:%S",
+    "status": true,
+    "message": "Successfully executed bootstrap.sh",
+    "starttime": "2024-12-16_17:21:06",
+    "endtime": "2024-12-16_17:21:14",
+    "result": {
+      "stdout": "[main ce29d48] Configure python-chrisapp-template/bootstrap.sh\n 1 file changed, 5 insertions(+), 5 deletions(-)\n       _                        __               _____                  \n      | |                      / _|             /  __ \\                 \n _ __ | |______ ___ _   _ _ __| |_ __ _  ___ ___| /  \\/_   _ _ ____   __\n| '_ \\| |______/ __| | | | '__|  _/ _` |/ __/ _ \\ |   | | | | '__\\ \\ / /\n| |_) | |      \\__ \\ |_| | |  | || (_| | (_|  __/ \\__/\\ |_| | |   \\ V / \n| .__/|_|      |___/\\__,_|_|  |_| \\__,_|\\___\\___|\\____/\\__,_|_|    \\_/  \n| |                                                                     \n|_|                                                                     \nCollecting chris_plugin==0.4.0 (from -r requirements.txt (line 1))\n  Using cached chris_plugin-0.4.0-py3-none-any.whl.metadata (3.0 kB)\nUsing cached chris_plugin-0.4.0-py3-none-any.whl (21 kB)\nInstalling collected packages: chris_plugin\nSuccessfully installed chris_plugin-0.4.0\nObtaining file:///home/appuser/repositories/pl-surfaceCurv\n  Installing build dependencies: started\n  Installing build dependencies: finished with status 'done'\n  Checking if build backend supports build_editable: started\n  Checking if build backend supports build_editable: finished with status 'done'\n  Getting requirements to build editable: started\n  Getting requirements to build editable: finished with status 'done'\n  Preparing editable metadata (pyproject.toml): started\n  Preparing editable metadata (pyproject.toml): finished with status 'done'\nRequirement already satisfied: chris_plugin in ./venv/lib/python3.12/site-packages (from surfaceCurv==1.0.0) (0.4.0)\nCollecting pytest~=7.1 (from surfaceCurv==1.0.0)\n  Using cached pytest-7.4.4-py3-none-any.whl.metadata (7.9 kB)\nCollecting iniconfig (from pytest~=7.1->surfaceCurv==1.0.0)\n  Using cached iniconfig-2.0.0-py3-none-any.whl.metadata (2.6 kB)\nCollecting packaging (from pytest~=7.1->surfaceCurv==1.0.0)\n  Using cached packaging-24.2-py3-none-any.whl.metadata (3.2 kB)\nCollecting pluggy<2.0,>=0.12 (from pytest~=7.1->surfaceCurv==1.0.0)\n  Using cached pluggy-1.5.0-py3-none-any.whl.metadata (4.8 kB)\nUsing cached pytest-7.4.4-py3-none-any.whl (325 kB)\nUsing cached pluggy-1.5.0-py3-none-any.whl (20 kB)\nUsing cached iniconfig-2.0.0-py3-none-any.whl (5.9 kB)\nUsing cached packaging-24.2-py3-none-any.whl (65 kB)\nBuilding wheels for collected packages: surfaceCurv\n  Building editable for surfaceCurv (pyproject.toml): started\n  Building editable for surfaceCurv (pyproject.toml): finished with status 'done'\n  Created wheel for surfaceCurv: filename=surfaceCurv-1.0.0-0.editable-py3-none-any.whl size=4048 sha256=9872a92177d4388485e078f3ae9eb36397817808c18010d113b8d5add7e455ff\n  Stored in directory: /tmp/pip-ephem-wheel-cache-zxe3givv/wheels/a7/95/35/c5a03f2117e915442f738db505b7d918819e6a4bb13edf3323\nSuccessfully built surfaceCurv\nInstalling collected packages: surfaceCurv, pluggy, packaging, iniconfig, pytest\nSuccessfully installed iniconfig-2.0.0 packaging-24.2 pluggy-1.5.0 pytest-7.4.4 surfaceCurv-1.0.0\nFor more information on how to get started, see README.md\nremoved '/home/appuser/repositories/pl-surfaceCurv/bootstrap.sh'\n",
+      "stderr": "+ git commit -m 'Configure python-chrisapp-template/bootstrap.sh' -- /home/appuser/repositories/pl-surfaceCurv/bootstrap.sh\n+ python -m venv venv\n+ source venv/bin/activate\n+ pip install -r requirements.txt\n+ pip install -e '.[dev]'\n\n✨Done!✨\n\nTo undo these actions and start over, run:\n\n\tgit reset --hard\n\tgit clean -df\n\trm -rf venv *.egg-info\n\tgit reset 'HEAD^'\n\nActivate the Python virtual environment by running:\n\n\tsource venv/bin/activate\n\nSave these changes by running:\n\n\tgit add -A && git commit -m \"Run bootstrap.sh\"\n\n+ rm -v /home/appuser/repositories/pl-surfaceCurv/bootstrap.sh\n",
+      "cmd": "bash /home/appuser/repositories/pl-surfaceCurv/bootstrap.sh",
+      "cwd": "/app",
+      "returncode": 0,
+      "script": null,
+      "uid": null
+    }
+  },
+  "gitCommit": null
+}
+----
+
+== gitCommit 
+
+=== call
+
+[bash]
+----
+curl -X 'POST' \
+  'http://localhost:8000/api/vi/boostrap/?step=gitCommit' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "plugin_title": "pl-surfaceCurv",
+  "scriptname": "surfaceCurv",
+  "description": "A ChRIS DS plugin to process a brain surface mesh and analyze curvature",
+  "organization": "FNNDSC",
+  "email": "dev@fnndsc.org"
+}'
+----
+
+=== response
+
+[json]
+----
+{
+  "TIMESTAMP_FORMAT": "%Y-%m-%d_%H:%M:%S",
+  "status": true,
+  "message": "All steps completed successfully",
+  "starttime": "2024-12-16_17:22:29",
+  "endtime": "2024-12-16_17:22:30",
+  "repoExists": null,
+  "repoCreateInitial": null,
+  "gitClone": null,
+  "shellEdit": null,
+  "shellExec": null,
+  "gitCommit": {
+    "TIMESTAMP_FORMAT": "%Y-%m-%d_%H:%M:%S",
+    "status": true,
+    "message": "Changes committed and pushed to pl-surfaceCurv.",
+    "starttime": "2024-12-16_17:22:29",
+    "endtime": "2024-12-16_17:22:30",
+    "details": {
+      "TIMESTAMP_FORMAT": "%Y-%m-%d_%H:%M:%S",
+      "status": true,
+      "message": "Successful commit",
+      "starttime": "",
+      "endtime": "",
+      "repo_name": "pl-surfaceCurv",
+      "repo_url": "https://REDACTED/FNNDSC/pl-surfaceCurv.git",
+      "clone_path": "/home/appuser/repositories/pl-surfaceCurv",
+      "branch": "main"
+    }
+  }
+}
+----
+
+== all
+
+All the above steps can be request by passing the `step=all` query parameter:
+
+=== call
+
+[bash]
+----
+curl -X 'POST' \
+  'http://localhost:8000/api/vi/boostrap/?step=all' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "plugin_title": "pl-surfaceCurv",
+  "scriptname": "surfaceCurv",
+  "description": "A ChRIS DS plugin to process a brain surface mesh and analyze curvature",
+  "organization": "FNNDSC",
+  "email": "dev@fnndsc.org"
+}'
+----
+
+=== response
+
+[json]
+----
+{
+  "TIMESTAMP_FORMAT": "%Y-%m-%d_%H:%M:%S",
+  "status": true,
+  "message": "All steps completed successfully",
+  "starttime": "2024-12-16_17:27:36",
+  "endtime": "2024-12-16_17:27:52",
+  "repoExists": {
+    "TIMESTAMP_FORMAT": "%Y-%m-%d_%H:%M:%S",
+    "status": true,
+    "message": "Repository pl-surfaceCurv is available: 404 {\"message\": \"Not Found\", \"documentation_url\": \"https://docs.github.com/rest/repos/repos#get-a-repository\", \"status\": \"404\"}",
+    "starttime": "2024-12-16_17:27:36",
+    "endtime": "2024-12-16_17:27:37",
+    "repo_name": "pl-surfaceCurv",
+    "exists": false,
+    "org_name": "FNNDSC"
+  },
+  "repoCreateInitial": {
+    "TIMESTAMP_FORMAT": "%Y-%m-%d_%H:%M:%S",
+    "status": true,
+    "message": "Repository pl-surfaceCurv created successfully from template",
+    "starttime": "2024-12-16_17:27:37",
+    "endtime": "2024-12-16_17:27:40",
+    "repo_name": "pl-surfaceCurv",
+    "repo_created": false,
+    "repo_url": null
+  },
+  "gitClone": {
+    "TIMESTAMP_FORMAT": "%Y-%m-%d_%H:%M:%S",
+    "status": true,
+    "message": "Repository cloned successfully to /home/appuser/repositories/pl-surfaceCurv",
+    "starttime": "2024-12-16_17:27:40",
+    "endtime": "2024-12-16_17:27:41",
+    "details": {
+      "TIMESTAMP_FORMAT": "%Y-%m-%d_%H:%M:%S",
+      "status": true,
+      "message": "Successful clone",
+      "starttime": "",
+      "endtime": "",
+      "repo_name": "pl-surfaceCurv",
+      "repo_url": "https://github.com/FNNDSC/pl-surfaceCurv.git",
+      "clone_path": "/home/appuser/repositories/pl-surfaceCurv",
+      "branch": "main"
+    }
+  },
+  "shellEdit": {
+    "TIMESTAMP_FORMAT": "%Y-%m-%d_%H:%M:%S",
+    "status": true,
+    "message": "Shell script edited successfully",
+    "starttime": "2024-12-16_17:27:41",
+    "endtime": "2024-12-16_17:27:41",
+    "script_path": "/home/appuser/repositories/pl-surfaceCurv/bootstrap.sh",
+    "changes_made": [
+      "PLUGIN_TITLE='pl-surfaceCurv'\n",
+      "SCRIPT_NAME='surfaceCurv'\n",
+      "DESCRIPTION='A ChRIS DS plugin to process a brain surface mesh and analyze curvature'\n",
+      "EMAIL='dev@fnndsc.org'\n",
+      "READY=yes\n"
+    ]
+  },
+  "shellExec": {
+    "TIMESTAMP_FORMAT": "%Y-%m-%d_%H:%M:%S",
+    "status": true,
+    "message": "Successfully executed bootstrap.sh",
+    "starttime": "2024-12-16_17:27:41",
+    "endtime": "2024-12-16_17:27:51",
+    "result": {
+      "stdout": "[main 31442ef] Configure python-chrisapp-template/bootstrap.sh\n 1 file changed, 5 insertions(+), 5 deletions(-)\n       _                        __               _____                  \n      | |                      / _|             /  __ \\                 \n _ __ | |______ ___ _   _ _ __| |_ __ _  ___ ___| /  \\/_   _ _ ____   __\n| '_ \\| |______/ __| | | | '__|  _/ _` |/ __/ _ \\ |   | | | | '__\\ \\ / /\n| |_) | |      \\__ \\ |_| | |  | || (_| | (_|  __/ \\__/\\ |_| | |   \\ V / \n| .__/|_|      |___/\\__,_|_|  |_| \\__,_|\\___\\___|\\____/\\__,_|_|    \\_/  \n| |                                                                     \n|_|                                                                     \nCollecting chris_plugin==0.4.0 (from -r requirements.txt (line 1))\n  Downloading chris_plugin-0.4.0-py3-none-any.whl.metadata (3.0 kB)\nDownloading chris_plugin-0.4.0-py3-none-any.whl (21 kB)\nInstalling collected packages: chris_plugin\nSuccessfully installed chris_plugin-0.4.0\nObtaining file:///home/appuser/repositories/pl-surfaceCurv\n  Installing build dependencies: started\n  Installing build dependencies: finished with status 'done'\n  Checking if build backend supports build_editable: started\n  Checking if build backend supports build_editable: finished with status 'done'\n  Getting requirements to build editable: started\n  Getting requirements to build editable: finished with status 'done'\n  Preparing editable metadata (pyproject.toml): started\n  Preparing editable metadata (pyproject.toml): finished with status 'done'\nRequirement already satisfied: chris_plugin in ./venv/lib/python3.12/site-packages (from surfaceCurv==1.0.0) (0.4.0)\nCollecting pytest~=7.1 (from surfaceCurv==1.0.0)\n  Downloading pytest-7.4.4-py3-none-any.whl.metadata (7.9 kB)\nCollecting iniconfig (from pytest~=7.1->surfaceCurv==1.0.0)\n  Downloading iniconfig-2.0.0-py3-none-any.whl.metadata (2.6 kB)\nCollecting packaging (from pytest~=7.1->surfaceCurv==1.0.0)\n  Downloading packaging-24.2-py3-none-any.whl.metadata (3.2 kB)\nCollecting pluggy<2.0,>=0.12 (from pytest~=7.1->surfaceCurv==1.0.0)\n  Downloading pluggy-1.5.0-py3-none-any.whl.metadata (4.8 kB)\nDownloading pytest-7.4.4-py3-none-any.whl (325 kB)\nDownloading pluggy-1.5.0-py3-none-any.whl (20 kB)\nDownloading iniconfig-2.0.0-py3-none-any.whl (5.9 kB)\nDownloading packaging-24.2-py3-none-any.whl (65 kB)\nBuilding wheels for collected packages: surfaceCurv\n  Building editable for surfaceCurv (pyproject.toml): started\n  Building editable for surfaceCurv (pyproject.toml): finished with status 'done'\n  Created wheel for surfaceCurv: filename=surfaceCurv-1.0.0-0.editable-py3-none-any.whl size=4048 sha256=820a623f7ae6f9a53cfcef8d2fbe3f9fed58fd544c95f950aaa2de38130a4452\n  Stored in directory: /tmp/pip-ephem-wheel-cache-6nvr38g5/wheels/a7/95/35/c5a03f2117e915442f738db505b7d918819e6a4bb13edf3323\nSuccessfully built surfaceCurv\nInstalling collected packages: surfaceCurv, pluggy, packaging, iniconfig, pytest\nSuccessfully installed iniconfig-2.0.0 packaging-24.2 pluggy-1.5.0 pytest-7.4.4 surfaceCurv-1.0.0\nFor more information on how to get started, see README.md\nremoved '/home/appuser/repositories/pl-surfaceCurv/bootstrap.sh'\n",
+      "stderr": "+ git commit -m 'Configure python-chrisapp-template/bootstrap.sh' -- /home/appuser/repositories/pl-surfaceCurv/bootstrap.sh\n+ python -m venv venv\n+ source venv/bin/activate\n+ pip install -r requirements.txt\n+ pip install -e '.[dev]'\n\n✨Done!✨\n\nTo undo these actions and start over, run:\n\n\tgit reset --hard\n\tgit clean -df\n\trm -rf venv *.egg-info\n\tgit reset 'HEAD^'\n\nActivate the Python virtual environment by running:\n\n\tsource venv/bin/activate\n\nSave these changes by running:\n\n\tgit add -A && git commit -m \"Run bootstrap.sh\"\n\n+ rm -v /home/appuser/repositories/pl-surfaceCurv/bootstrap.sh\n",
+      "cmd": "bash /home/appuser/repositories/pl-surfaceCurv/bootstrap.sh",
+      "cwd": "/app",
+      "returncode": 0,
+      "script": null,
+      "uid": null
+    }
+  },
+  "gitCommit": {
+    "TIMESTAMP_FORMAT": "%Y-%m-%d_%H:%M:%S",
+    "status": true,
+    "message": "Changes committed and pushed to pl-surfaceCurv.",
+    "starttime": "2024-12-16_17:27:51",
+    "endtime": "2024-12-16_17:27:52",
+    "details": {
+      "TIMESTAMP_FORMAT": "%Y-%m-%d_%H:%M:%S",
+      "status": true,
+      "message": "Successful commit",
+      "starttime": "",
+      "endtime": "",
+      "repo_name": "pl-surfaceCurv",
+      "repo_url": "https://REDACTED/FNNDSC/pl-surfaceCurv.git",
+      "clone_path": "/home/appuser/repositories/pl-surfaceCurv",
+      "branch": "main"
+    }
+  }
+}
+----
+
+>>>>>>> 54ceca6 (Update API documentation remove secrets)
