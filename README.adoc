@@ -41,12 +41,17 @@ Finally, `pf_build` will commit these changes back to github, resulting in a ful
 
 Providing an explicit PAT in the call to `pf_build` is not required but might become the default in future.
 
+== API documentation
+
+See link:docs/API.adoc[here] for an overview of the API end point as well as a complete exemplar calling sequence.
+
 == Features
 - Simple/single API POST endpoint
 - RESTful APIs with versioning
 - MongoDB integration using pfmongo
 - Dockerized deployment
 
+(Note mongoDB integration is not currently complete and `pf_build` does store state information in a per-instantiated container! This will be changed in a future update.)
 
 == Contributing
 We welcome contributions! Please see link:CONTRIBUTING.adoc[CONTRIBUTING] for guidelines. We adhere strictly to our link:CODE_OF_CONDUCT.adoc[CODE_OF_CONDUCT].
