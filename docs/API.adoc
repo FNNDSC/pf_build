@@ -458,4 +458,3 @@ curl -X 'POST' \
 }
 ----
 
->>>>>>> 54ceca6 (Update API documentation remove secrets)
