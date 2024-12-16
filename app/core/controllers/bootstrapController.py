@@ -31,6 +31,7 @@ from app.config.settings import appData
 from github import Github
 from pathlib import Path
 import time
+from datetime import datetime
 
 logger_format = (
     "<green>{time:YYYY-MM-DD HH:mm:ss}</green> │ "
@@ -80,6 +81,7 @@ async def bootstrap_repoExists(
         repo_name=values.plugin_title,
         org_name=values.organization,
     )
+    result.end_stamp()
     return result
 
 
@@ -428,6 +430,7 @@ async def bootstrap_exec(
     """
     # pudb.set_trace()
     state: BootstrapState = BootstrapState()
+    state.start_stamp()
     # Define the correct dependency order
     ordered_steps: list[BootstrapStep] = [
         BootstrapStep.REPO_EXISTS,
@@ -465,7 +468,13 @@ async def bootstrap_exec(
             step_func: Callable[
                 [BootstrapModel, Github], Awaitable[BootstrapStepBase]
             ] = globals()[method_name]
-            result: BootstrapStepBase = await step_func(values, github_client)
+            result: BootstrapStepBase = BootstrapStepBase()
+
+            # Capture the starttime before executing the step
+            # starttime: str = result.start_stamp()
+            LOG(f"start time = {(starttime := result.start_stamp())}")
+            result = await step_func(values, github_client)
+            LOG(f"elapsed time = {result.stampFromStart(starttime)}")
             LOG(result)
             state.update(current.field, result)
         except KeyError:
@@ -478,5 +487,5 @@ async def bootstrap_exec(
                 f"An error occurred while processing step '{current.field}': {str(e)}"
             )
             break
-
+    state.end_stamp()
     return state

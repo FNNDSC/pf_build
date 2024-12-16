@@ -8,6 +8,7 @@ from app.config.settings import appData
 from github import Github
 from git import Repo
 from app.utils.jobController import JobResult
+from datetime import datetime
 
 
 class BootstrapStep(Enum):
@@ -32,8 +33,67 @@ class BootstrapResponse(BaseModel):
 class BootstrapStepBase(BaseModel):
     """Base model for any bootstrap step"""
 
-    status: bool = False
-    message: str = ""
+    TIMESTAMP_FORMAT: str = (
+        "%Y-%m-%d_%H:%M:%S"  # Define the format as a class-level constant
+    )
+    status: bool = Field(
+        default=False, description="Indicates if the step was successful"
+    )
+    message: str = Field(default="", description="Message associated with the step")
+    starttime: str = Field(default="", description="Timestamp when the step started")
+    endtime: str = Field(default="", description="Timestamp when the step ended")
+
+    def start_stamp(self, timestamp: str | None = None) -> str:
+        """
+        Sets the starttime field to the current timestamp or to the provided timestamp.
+
+        Args:
+            timestamp (str | None): Optional timestamp string. If provided, sets starttime to this value.
+                                    If None, sets starttime to the current timestamp.
+        """
+        self.starttime = timestamp or datetime.now().strftime(self.TIMESTAMP_FORMAT)
+        return self.starttime
+
+    def end_stamp(self, timestamp: str | None = None) -> str:
+        """
+        Sets the endtime field to the current timestamp or to the provided timestamp.
+
+        Args:
+            timestamp (str | None): Optional timestamp string. If provided, sets endtime to this value.
+                                    If None, sets endtime to the current timestamp.
+        """
+        self.endtime = timestamp or datetime.now().strftime(self.TIMESTAMP_FORMAT)
+        return self.endtime
+
+    def elapsed_time(self) -> str:
+        """
+        Calculate the elapsed time between starttime and endtime.
+
+        Returns:
+            str: Elapsed time in HH:MM:SS format, or a message if timestamps are invalid.
+        """
+        try:
+            start = datetime.strptime(self.starttime, self.TIMESTAMP_FORMAT)
+            end = datetime.strptime(self.endtime, self.TIMESTAMP_FORMAT)
+            elapsed = end - start
+            return str(elapsed)  # Returns HH:MM:SS format
+        except ValueError:
+            return "Invalid timestamps"
+
+    def stampFromStart(self, timestart: str) -> str:
+        """
+        Updates the starttime and endtime fields, and calculates the elapsed time.
+
+        Args:
+            timestart (str): The start timestamp in the format defined by TIMESTAMP_FORMAT.
+
+        Returns:
+            str: The elapsed time between the provided starttime and the current endtime,
+                 formatted as HH:MM:SS, or an error message if the timestamps are invalid.
+        """
+        self.starttime = timestart
+        self.end_stamp()
+        return self.elapsed_time()
 
     def skip_with_message(
         self, message: str = "Skipped due to previous step failure"
@@ -44,7 +104,7 @@ class BootstrapStepBase(BaseModel):
 
 
 class GithubRepoExists(BootstrapStepBase):
-    repo_name: str
+    repo_name: str = ""
     exists: bool = False
     org_name: str = "FNNDSC"
 
