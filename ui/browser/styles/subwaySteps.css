@@ -1,0 +1,172 @@
+/* General container for the subway steps */
+.subway-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 2rem auto;
+    max-width: 800px; /* Increased width for more spacing */
+    position: relative;
+}
+
+/* Wrapper for step and text */
+.subway-step-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    flex: 1; /* Ensures even spacing between steps */
+    gap: 0.3rem;
+}
+
+/* Individual step circles */
+.subway-step {
+    width: 35px; /* Reduced size */
+    height: 35px;
+    border-radius: 50%;
+    background-color: gray; /* Default (idle) state */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #aaa; /* Idle state text color */
+    font-size: 0.8rem;
+    font-weight: bold;
+    position: relative;
+    z-index: 2; /* Circles appear above lines */
+    transition:
+        background-color 0.3s ease,
+        color 0.3s ease;
+    cursor: pointer; /* Makes steps clickable */
+}
+
+/* Active step animation */
+.subway-step.active {
+    animation: pulse 1s infinite;
+    background-color: #4a90e2; /* Submit button color */
+    color: white; /* Text color for active step */
+}
+
+/* Completed step */
+.subway-step.completed {
+    background-color: #4a90e2; /* Completed step color */
+    color: white; /* Text color for completed step */
+}
+
+/* Connecting lines drawn as pseudo-elements */
+.subway-step::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 100%; /* Line starts at the right edge of the step */
+    width: calc(100% + 90px); /* Extend line to touch the next step */
+    height: 4px;
+    background-color: gray; /* Default (idle) line color */
+    transform: translateY(-50%);
+    z-index: 1;
+    transition: background-color 0.3s ease;
+}
+
+/* Line after completed steps */
+.subway-step.completed::after {
+    background-color: #4a90e2; /* Line matches completed step color */
+}
+
+/* Remove the line after the last step */
+.subway-step-wrapper:last-child .subway-step::after {
+    content: none;
+}
+
+/* Step text under the circle */
+.subway-step-text {
+    font-size: 0.75rem; /* Smaller font size for labels */
+    color: #aaa; /* Placeholder color for labels */
+    text-align: center;
+    margin-top: 0.3rem;
+}
+
+/* Ensure modal overlay covers the whole viewport */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 1;
+    transition: opacity 0.3s ease; /* Smooth visibility changes */
+}
+
+.modal-content {
+    background-color: #1e1e2f;
+    color: #f5f5f5;
+    border-radius: 8px;
+    padding: 1.5rem;
+    width: 90%;
+    max-width: 600px; /* Increased width */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    position: relative;
+    overflow-y: auto;
+    max-height: 80vh;
+}
+
+pre {
+    margin: 0; /* Remove extra margin around the syntax highlighter */
+}
+
+/* /* Ensure modal content is centered and visible */
+*/
+/* .modal-content { */
+/*     background-color: #1e1e2f; */
+/*     color: #f5f5f5; */
+/*     border-radius: 8px; */
+/*     padding: 1.5rem; */
+/*     width: 90%; */
+/*     max-width: 500px; */
+/*     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5); */
+/*     position: relative; */
+/*     overflow-y: auto; */
+/*     max-height: 80vh; */
+/*     z-index: 1001; */
+/*     opacity: 1; */
+/*     transition: opacity 0.3s ease; */
+/* } */
+
+/* Modal close button */
+.modal-close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: none;
+    border: none;
+    color: #f5f5f5;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+/* JSON content */
+.modal-json {
+    font-family: "Courier New", Courier, monospace;
+    font-size: 0.9rem;
+    background-color: #2a2a40;
+    padding: 1rem;
+    border-radius: 4px;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+    margin-top: 1rem;
+}
+
+/* Pulsing animation for active step */
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 5px #4a90e2;
+    }
+    50% {
+        box-shadow: 0 0 15px #4a90e2;
+    }
+    100% {
+        box-shadow: 0 0 5px #4a90e2;
+    }
+}
