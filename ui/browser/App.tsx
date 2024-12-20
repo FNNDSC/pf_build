@@ -89,39 +89,16 @@ const App: React.FC = () => {
     };
 
     const handleSubwayStopClick = (stepIndex: number): void => {
-        console.log(`Subway stop clicked for index '${stepIndex}'`);
         const step = steps.find((s) => s.id === stepIndex + 1); // Adjust for zero-based index
-
         if (step) {
             const stepName = step.name;
-
-            // Toggle modal if clicking the same stop
-            if (
-                modalOpen &&
-                modalContent &&
-                (modalContent as any).step === stepName
-            ) {
-                console.log(`Toggling off modal for step '${stepName}'`);
-                setModalOpen(false);
-                setModalContent(null);
-                return;
-            }
-
             const response = responses[stepName];
-            console.log(`Resolved step name: '${stepName}'`);
-
             if (response) {
-                console.log(
-                    `Displaying response for step '${stepName}':`,
-                    response,
+                setModalContent((prev) =>
+                    prev === response ? null : { ...response, step: stepName },
                 );
-                setModalContent({ ...response, step: stepName }); // Add step name to content for comparison
-                setModalOpen(true);
-            } else {
-                console.warn(`No response available for step: ${stepName}`);
+                setModalOpen((prev) => !prev);
             }
-        } else {
-            console.error(`No step found for index: ${stepIndex}`);
         }
     };
 
@@ -132,26 +109,38 @@ const App: React.FC = () => {
                 <h1 className="header-title">ChRIS Plugin Factory</h1>
             </header>
             <main className="app-content">
+                <p className="intro-text">
+                    Welcome to the ChRIS Plugin Factory -- the easiest way to
+                    get started coding your ChRIS application! Fill in the form
+                    and hit "Submit".
+                </p>
                 <form onSubmit={handleSubmit} className="padded-form">
                     <h2>Factory Details</h2>
                     <div className="form-row">
                         <label htmlFor="service_url" className="form-label">
                             Service URL:
                         </label>
-                        <input
-                            type="text"
-                            id="service_url"
-                            name="service_url"
-                            placeholder="Service URL"
-                            value={formValues.service_url}
-                            onChange={handleChange}
-                            className="form-input"
-                        />
+                        <div className="form-input-container">
+                            <input
+                                type="text"
+                                id="service_url"
+                                name="service_url"
+                                placeholder="Service URL"
+                                value={formValues.service_url}
+                                onChange={handleChange}
+                                className="form-input"
+                            />
+                            <p className="form-help-text">
+                                The Service URL is the web endpoint controlling
+                                this process. Safe to leave as is unless a
+                                custom factory applies.
+                            </p>
+                        </div>
                     </div>
                     <h2>Plugin Meta Data</h2>
-                    {Object.keys(formValues)
-                        .filter((key) => key !== "service_url")
-                        .map((key) => (
+                    {Object.entries(formValues)
+                        .filter(([key]) => key !== "service_url")
+                        .map(([key, value]) => (
                             <div key={key} className="form-row">
                                 <label htmlFor={key} className="form-label">
                                     {key
@@ -161,19 +150,24 @@ const App: React.FC = () => {
                                         )}
                                     :
                                 </label>
-                                <input
-                                    type={
-                                        key === "github_token"
-                                            ? "password"
-                                            : "text"
-                                    }
-                                    id={key}
-                                    name={key}
-                                    placeholder={key}
-                                    value={(formValues as any)[key]}
-                                    onChange={handleChange}
-                                    className="form-input"
-                                />
+                                <div className="form-input-container">
+                                    <input
+                                        type={
+                                            key === "github_token"
+                                                ? "password"
+                                                : "text"
+                                        }
+                                        id={key}
+                                        name={key}
+                                        placeholder={key}
+                                        value={value}
+                                        onChange={handleChange}
+                                        className="form-input"
+                                    />
+                                    <p className="form-help-text">
+                                        {getFieldExplanation(key)}
+                                    </p>
+                                </div>
                             </div>
                         ))}
                     <button type="submit" className="form-submit">
@@ -182,9 +176,7 @@ const App: React.FC = () => {
                 </form>
                 <SubwaySteps
                     steps={steps}
-                    onStepClick={(stepIndex: number) =>
-                        handleSubwayStopClick(stepIndex)
-                    }
+                    onStepClick={handleSubwayStopClick}
                 />
                 <Modal
                     isOpen={modalOpen}
@@ -194,6 +186,23 @@ const App: React.FC = () => {
             </main>
         </div>
     );
+};
+
+const getFieldExplanation = (field: string): string => {
+    const explanations: Record<string, string> = {
+        plugin_title:
+            "Provide a title for this project and all its files. By convention, this title is prefixed with 'pl-', e.g., 'pl-brainSurfaceAnalysis'.",
+        scriptname:
+            "Specify the Python script name for this plugin. This will be file you can start to edit when you clone this repository, e.g. 'brainSurfaceAnalysis'.",
+        description:
+            "Briefly describe the plugin's functionality in a sentence, e.g. 'This plugin determines areas of high curvature on a brain surface mesh reconstruction.'",
+        organization:
+            "Enter your organization's name, e.g. 'Boston Children's Hospital'.",
+        email: "Your email address.",
+        github_token:
+            "Enter your GitHub Personal Access Token. Only required if you want this built in your personal github account. Currently builds will appear in the default github organization specified when the factory was started.",
+    };
+    return explanations[field] || "";
 };
 
 export default App;

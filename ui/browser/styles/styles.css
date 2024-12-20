@@ -1,6 +1,5 @@
-/* General container */
 body {
-    background-color: #1e1e2f; /* Apply dark background to the entire page */
+    background-color: #1e1e2f;
     color: #f5f5f5;
     font-family: "Roboto", sans-serif;
     margin: 0;
@@ -10,155 +9,108 @@ body {
 .app-container {
     display: flex;
     flex-direction: column;
-    min-height: 100vh; /* Ensure the content fills the full height */
+    min-height: 100vh;
 }
 
 .app-header {
-    background-color: #000;
-    color: #fff;
-    padding: 0 1.5rem;
+    background-color: #1a1a2e;
+    color: #f5f5f5;
+    padding: 1rem;
     display: flex;
     align-items: center;
-    justify-content: space-between; /* Ensures logo and title are spaced */
+    gap: 1rem;
 }
 
 .app-logo {
-    height: 45px;
+    height: 50px;
 }
 
-/* Content */
-.app-content {
-    flex-grow: 1; /* Ensures the content fills the available vertical space */
-    max-width: 100%; /* Allow content to span the full available width */
-    padding: 1rem 2.5rem; /* Dynamic spacing on the left and right */
-    box-sizing: border-box;
-    /* margin: auto; */
-}
-
-/* Form styles */
-.form-row {
-    display: flex;
-    align-items: center;
-    margin-bottom: 0.5rem;
-}
-
-.form-label {
-    width: 150px;
-    text-align: left;
+.header-title {
+    font-size: 1.5rem;
     font-weight: bold;
 }
 
-.form-input {
+.app-content {
     flex-grow: 1;
+    padding: 2rem;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.intro-text {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+}
+
+.form-row {
+    display: flex;
+    align-items: baseline; /* Align label and input vertically */
+    margin-bottom: 1.5rem;
+}
+
+.form-label {
+    width: 150px; /* Consistent label width */
+    margin-right: 0.5rem; /* Reduce gap between label and input */
+    font-size: 1rem;
+    text-align: right; /* Align text to the right for better aesthetics */
+}
+
+.form-input-container {
+    flex-grow: 1; /* Allow input to grow consistently */
+    width: 300px;
+    display: flex;
+    flex-direction: column; /* Stack input and help text vertically */
+    margin: 0;
+}
+
+.form-input {
+    width: 100%;
+    max-width: 100%;
     padding: 0.5rem;
     border: 1px solid #ccc;
     border-radius: 4px;
-    background-color: #2a2a40;
-    color: #f5f5f5;
+    font-size: 1rem;
+    vertical-align: middle; /* Align watermark text correctly */
+}
+
+.form-help-text {
+    font-size: 0.85rem;
+    color: #aaa;
+    margin-top: 0.25rem; /* Space between input and help text */
+    line-height: 1.4;
+    width: 100%;
 }
 
 .form-submit {
-    display: block;
-    margin: 1rem auto;
-    padding: 0.5rem 1rem;
     background-color: #4a90e2;
-    color: #fff;
+    color: white;
     border: none;
+    padding: 0.75rem 1.5rem;
     border-radius: 4px;
     cursor: pointer;
     font-size: 1rem;
+    font-weight: bold;
+    margin: 1rem auto; /* Center-align the button */
+    display: block; /* Ensures centering */
 }
 
 .form-submit:hover {
     background-color: #357ab8;
 }
 
-/* Subway Steps */
-.subway-container {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin: 2rem auto;
-    max-width: 800px;
-    position: relative;
+.form-row.faded .form-label,
+.form-row.faded .form-input,
+.form-row.faded .form-help-text {
+    opacity: 0.6; /* Makes the elements look slightly faded */
 }
 
-.subway-step-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    position: relative;
-    flex: 1;
-    gap: 0.3rem;
+.form-row.faded .form-input {
+    background-color: #2a2a40; /* Slightly darker background for input */
 }
 
-.subway-step {
-    width: 35px;
-    height: 35px;
-    border-radius: 50%;
-    background-color: gray;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #aaa;
-    font-size: 0.8rem;
-    font-weight: bold;
-    position: relative;
-    z-index: 2;
-    transition:
-        background-color 0.3s ease,
-        color 0.3s ease;
-    cursor: pointer;
-}
-
-.subway-step.active {
-    animation: pulse 1s infinite;
-    background-color: #4a90e2;
-    color: white;
-}
-
-.subway-step.completed {
-    background-color: #4a90e2;
-    color: white;
-}
-
-.subway-step::after {
-    content: "";
-    position: absolute;
-    top: 50%;
-    left: 100%;
-    width: calc(100% + 90px);
-    height: 4px;
-    background-color: gray;
-    transform: translateY(-50%);
-    z-index: 1;
-    transition: background-color 0.3s ease;
-}
-
-.subway-step.completed::after {
-    background-color: #4a90e2;
-}
-
-.subway-step-wrapper:last-child .subway-step::after {
-    content: none;
-}
-
-.subway-step-text {
-    font-size: 0.75rem;
-    color: #aaa;
-    text-align: center;
-    margin-top: 0.3rem;
-}
-
-/* Pulsing animation for active steps */
-@keyframes pulse {
-    0% {
-        box-shadow: 0 0 5px #4a90e2;
-    }
-    50% {
-        box-shadow: 0 0 15px #4a90e2;
-    }
-    100% {
-        box-shadow: 0 0 5px #4a90e2;
-    }
+.form-row.faded:hover .form-label,
+.form-row.faded:hover .form-input,
+.form-row.faded:hover .form-help-text {
+    opacity: 1; /* Restore full visibility on hover for interactivity */
 }
