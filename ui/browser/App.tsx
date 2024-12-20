@@ -43,6 +43,9 @@ const App: React.FC = () => {
 
     const [modalOpen, setModalOpen] = useState(false);
     const [modalContent, setModalContent] = useState<object | null>(null);
+    const [completionMessage, setCompletionMessage] = useState<string | null>(
+        null,
+    );
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
         const { name, value } = e.target;
@@ -81,6 +84,19 @@ const App: React.FC = () => {
                         s.name === step.name ? { ...s, state: "completed" } : s,
                     ),
                 );
+
+                // Check for gitCommit completion
+                if (
+                    step.name === "gitCommit" &&
+                    response.status === true &&
+                    response.gitCommit?.repo_url
+                ) {
+                    setCompletionMessage(
+                        `🎉 Congratulations! Your new ChRIS plugin is ready for use and further development. Clone your repository locally using the command:\n\n` +
+                            `git clone ${response.gitCommit.repo_url}\n\n` +
+                            `You can now start making changes to the cloned repository on your local machine.`,
+                    );
+                }
             } catch (error) {
                 console.error(`Error during step '${step.name}':`, error);
                 break;
@@ -102,25 +118,6 @@ const App: React.FC = () => {
         }
     };
 
-    const getFieldExplanation = (field: string): string => {
-        const explanations: Record<string, string> = {
-            plugin_title:
-                "Provide a title for this project and all its files. By convention, this title is prefixed with 'pl-', e.g., 'pl-brainSurfaceAnalysis'.",
-            scriptname:
-                "Specify the Python script name for this plugin. This will be the file you can start to edit when you clone this repository, e.g., brainSurfaceAnalysis.",
-            description:
-                "Briefly describe the plugin's functionality in a sentence, e.g., 'This plugin determines areas of high curvature on a brain surface mesh reconstruction.'",
-            organization:
-                "Enter your organization's name, e.g., Boston Children's Hospital.",
-            email: "Your email address.",
-            github_token:
-                "Enter your GitHub Personal Access Token. Only required if you want this built in your personal GitHub account.",
-            service_url:
-                "The Service URL is the web endpoint controlling this process. Usually, no changes are needed.",
-        };
-        return explanations[field] || "";
-    };
-
     return (
         <div className="app-container">
             <header className="app-header">
@@ -135,7 +132,15 @@ const App: React.FC = () => {
                 </p>
                 <form onSubmit={handleSubmit} className="padded-form">
                     <h2>Factory Details</h2>
-                    <div className="form-row faded">
+                    <div
+                        className={`form-row ${
+                            ["service_url", "github_token"].includes(
+                                "service_url",
+                            )
+                                ? "faded"
+                                : ""
+                        }`}
+                    >
                         <label htmlFor="service_url" className="form-label">
                             Service URL:
                         </label>
@@ -150,7 +155,9 @@ const App: React.FC = () => {
                                 className="form-input"
                             />
                             <p className="form-help-text">
-                                {getFieldExplanation("service_url")}
+                                The Service URL is the web endpoint controlling
+                                this process. Safe to leave as is unless a
+                                custom factory applies.
                             </p>
                         </div>
                     </div>
@@ -161,7 +168,9 @@ const App: React.FC = () => {
                             <div
                                 key={key}
                                 className={`form-row ${
-                                    key === "github_token" ? "faded" : ""
+                                    ["github_token"].includes(key)
+                                        ? "faded"
+                                        : ""
                                 }`}
                             >
                                 <label htmlFor={key} className="form-label">
@@ -200,6 +209,11 @@ const App: React.FC = () => {
                     steps={steps}
                     onStepClick={handleSubwayStopClick}
                 />
+                {completionMessage && (
+                    <div className="completion-message">
+                        <p>{completionMessage}</p>
+                    </div>
+                )}
                 <Modal
                     isOpen={modalOpen}
                     onClose={() => setModalOpen(false)}
@@ -208,6 +222,23 @@ const App: React.FC = () => {
             </main>
         </div>
     );
+};
+
+const getFieldExplanation = (field: string): string => {
+    const explanations: Record<string, string> = {
+        plugin_title:
+            "Provide a title for this project and all its files. By convention, this title is prefixed with 'pl-', e.g., 'pl-brainSurfaceAnalysis'.",
+        scriptname:
+            "Specify the Python script name for this plugin. This will be file you can start to edit when you clone this repository, e.g. 'brainSurfaceAnalysis'.",
+        description:
+            "Briefly describe the plugin's functionality in a sentence, e.g. 'This plugin determines areas of high curvature on a brain surface mesh reconstruction.'",
+        organization:
+            "Enter your organization's name, e.g. 'Boston Children's Hospital'.",
+        email: "Your email address.",
+        github_token:
+            "Enter your GitHub Personal Access Token. Only required if you want this built in your personal github account. Currently builds will appear in the default github organization specified when the factory was started.",
+    };
+    return explanations[field] || "";
 };
 
 export default App;
