@@ -2,7 +2,6 @@
     "name": "ui",
     "version": "1.0.0",
     "description": "",
-    "main": "index.js",
     "directories": {
         "lib": "lib"
     },
@@ -10,12 +9,14 @@
         "dev": "vite",
         "build": "vite build",
         "start": "vite preview",
+        "cli": "ts-node --project tsconfig.cli.json cli/pf_call.ts",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "keywords": [],
     "author": "",
     "license": "ISC",
     "dependencies": {
+        "commander": "^11.0.0",
         "react": "^19.0.0",
         "react-dom": "^19.0.0",
         "typescript": "^5.7.2",
@@ -29,6 +30,8 @@
         "@typescript-eslint/eslint-plugin": "^8.18.1",
         "@typescript-eslint/parser": "^8.18.1",
         "eslint": "^9.17.0",
-        "prettier": "^3.4.2"
+        "prettier": "^3.4.2",
+        "ts-node": "^10.0.0",
+        "typescript": "^5.0.0"
     }
 }

@@ -1,11 +1,10 @@
 import React from "react";
 import "../styles/subwaySteps.css";
-
-export type StepState = "idle" | "active" | "completed";
+import { Step, StepState } from "../types/processSteps";
 
 interface SubwayStepsProps {
-    steps: { id: number; name: string; state: StepState }[];
-    onStepClick: (index: number) => void; // Click handler
+    steps: Step[];
+    onStepClick: (index: number) => void;
 }
 
 const SubwaySteps: React.FC<SubwayStepsProps> = ({ steps, onStepClick }) => {

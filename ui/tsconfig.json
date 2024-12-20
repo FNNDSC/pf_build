@@ -6,7 +6,8 @@
         "strict": true,
         "moduleResolution": "node",
         "esModuleInterop": true,
-        "skipLibCheck": true
+        "skipLibCheck": true,
+        "lib": ["dom", "es2017"]
     },
     "include": ["browser/**/*", "lib/**/*", "types/**/*"]
 }
