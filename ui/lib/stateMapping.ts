@@ -98,7 +98,7 @@ class StateMappingGenerator {
                 baseResponse.repoExists = {
                     TIMESTAMP_FORMAT: "%Y-%m-%d_%H:%M:%S",
                     status: true,
-                    message: `Repository ${pluginTitle} exists or not found.`,
+                    message: `Repository ${pluginTitle} does not exist or not found.`,
                     starttime: stepStartTime,
                     endtime: stepEndTime,
                     repo_name: pluginTitle,

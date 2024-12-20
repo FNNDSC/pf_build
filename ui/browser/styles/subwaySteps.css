@@ -4,7 +4,7 @@
     align-items: center;
     justify-content: space-between;
     margin: 2rem auto;
-    max-width: 800px; /* Width for better alignment */
+    max-width: 100%; /* Width for better alignment */
     position: relative;
 }
 
@@ -93,5 +93,14 @@
     }
     100% {
         box-shadow: 0 0 5px #4a90e2;
+    }
+}
+
+@media (max-width: 768px) {
+    .subway-container {
+        max-width: 90%; /* Reduce width for smaller screens */
+    }
+    .subway-step-wrapper {
+        flex: 1; /* Tighter spacing for small devices */
     }
 }
