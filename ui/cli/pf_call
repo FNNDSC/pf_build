@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# Wrapper script for ts-node execution
+SCRIPT_DIR=$(dirname "$0")
+TS_NODE_CMD="ts-node --project $SCRIPT_DIR/../tsconfig.cli.json"
+
+$TS_NODE_CMD "$SCRIPT_DIR/pf_call.ts" "$@"
+

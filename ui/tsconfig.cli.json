@@ -1,0 +1,12 @@
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "module": "commonjs", // Use CommonJS for Node.js compatibility
+        "outDir": "dist/cli", // Separate output directory for CLI builds
+        "target": "es2021", // Match Node.js capabilities
+        "rootDir": "cli", // Ensure CLI-specific files are included
+        "typeRoots": ["./node_modules/@types"],
+        "lib": ["dom", "es2017"]
+    },
+    "include": ["cli/**/*"] // Include only CLI files
+}
