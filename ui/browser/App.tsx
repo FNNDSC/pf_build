@@ -6,6 +6,13 @@ import Modal from "./components/modal";
 import logo from "../images/ChRISlogo-color.svg";
 import "./styles/styles.css";
 
+// Define the Step interface
+interface Step {
+    id: number;
+    name: StateEnum;
+    state: "idle" | "active" | "completed";
+}
+
 const App: React.FC = () => {
     const [formValues, setFormValues] = useState({
         plugin_title: "",
@@ -17,18 +24,14 @@ const App: React.FC = () => {
         service_url: "http://localhost:8000", // Default or user-provided service URL
     });
 
-    const [steps, setSteps] = useState([
+    const [steps, setSteps] = useState<Step[]>([
         { id: 1, name: "repoExists", state: "idle" },
         { id: 2, name: "repoCreateInitial", state: "idle" },
         { id: 3, name: "gitClone", state: "idle" },
         { id: 4, name: "shellEdit", state: "idle" },
         { id: 5, name: "shellExec", state: "idle" },
         { id: 6, name: "gitCommit", state: "idle" },
-    ] as {
-        id: number;
-        name: StateEnum;
-        state: "idle" | "active" | "completed";
-    }[]);
+    ]);
 
     const [responses, setResponses] = useState<
         Record<StateEnum, StateResponse | null>
@@ -59,11 +62,7 @@ const App: React.FC = () => {
     };
 
     const finalMessage_checkAndShow = (
-        step: {
-            id: number;
-            name: StateEnum;
-            state: "idle" | "active" | "completed";
-        },
+        step: Step,
         response: StateResponse,
     ): void => {
         if (
@@ -185,9 +184,7 @@ const App: React.FC = () => {
                         .map(([key, value]) => (
                             <div
                                 key={key}
-                                className={`form-row ${
-                                    key === "github_token" ? "faded" : ""
-                                }`}
+                                className={`form-row ${key === "github_token" ? "faded" : ""}`}
                             >
                                 <label htmlFor={key} className="form-label">
                                     {key
