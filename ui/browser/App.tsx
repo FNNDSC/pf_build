@@ -1,51 +1,49 @@
-import React, { useState } from "react";
-import { StateEnum, StateResponse } from "../lib/stateMapping";
-import { fetch } from "../lib/stateMapping";
+import React, { useState, useEffect } from "react";
+import Form from "./components/form";
+import { executeStates } from "./control";
 import SubwaySteps from "./components/subwaySteps";
 import Modal from "./components/modal";
-import logo from "../images/ChRISlogo-color.svg";
+import CompletionMessage from "./components/completionMessage";
+import { Step } from "../types/processSteps";
+import { StateEnum, StateResponse } from "../lib/stateMapping";
 import "./styles/styles.css";
-
-// Define the Step interface
-interface Step {
-    id: number;
-    name: StateEnum;
-    state: "idle" | "active" | "completed";
-}
+import logo from "../images/ChRISlogo-color.svg";
 
 const App: React.FC = () => {
-    const [formValues, setFormValues] = useState({
+    const initialFormValues = {
         plugin_title: "",
         scriptname: "",
         description: "",
         organization: "",
         email: "",
         github_token: "",
-        service_url: "http://localhost:8000", // Default or user-provided service URL
-    });
+        service_url: "http://localhost:8000",
+    };
 
-    const [steps, setSteps] = useState<Step[]>([
+    const initialSteps: Step[] = [
         { id: 1, name: "repoExists", state: "idle" },
         { id: 2, name: "repoCreateInitial", state: "idle" },
         { id: 3, name: "gitClone", state: "idle" },
         { id: 4, name: "shellEdit", state: "idle" },
         { id: 5, name: "shellExec", state: "idle" },
         { id: 6, name: "gitCommit", state: "idle" },
-    ]);
+    ];
 
-    const [responses, setResponses] = useState<
-        Record<StateEnum, StateResponse | null>
-    >({
+    const initialResponses: Record<StateEnum, StateResponse | null> = {
         repoExists: null,
         repoCreateInitial: null,
         gitClone: null,
         shellEdit: null,
         shellExec: null,
         gitCommit: null,
-    });
+    };
 
+    const [formValues, setFormValues] = useState(initialFormValues);
+    const [steps, setSteps] = useState<Step[]>(initialSteps);
+    const [responses, setResponses] =
+        useState<Record<StateEnum, StateResponse | null>>(initialResponses);
     const [modalOpen, setModalOpen] = useState(false);
-    const [modalContent, setModalContent] = useState<object | null>(null);
+    const [modalContent, setModalContent] = useState<string | null>(null);
     const [completionMessage, setCompletionMessage] = useState<string | null>(
         null,
     );
@@ -58,92 +56,64 @@ const App: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent): Promise<void> => {
         e.preventDefault();
         console.log("Form submitted with values:", formValues);
-        await executeStates();
-    };
-
-    const finalMessage_checkAndShow = (
-        step: Step,
-        response: StateResponse,
-    ): void => {
-        if (
-            step.name === "gitCommit" &&
-            response.status === true &&
-            response.gitCommit?.repo_url
-        ) {
-            setCompletionMessage(
-                `🎉 Congratulations! Your new ChRIS plugin is ready for use and further development. Clone your repository locally using the command:\n\n` +
-                    `git clone ${response.gitCommit.repo_url}\n\n` +
-                    `You can now start making changes to the cloned repository on your local machine.`,
-            );
-        }
-    };
-
-    const executeStates = async (): Promise<void> => {
-        for (const step of steps) {
-            setSteps((prev) =>
-                prev.map((s) =>
-                    s.name === step.name ? { ...s, state: "active" } : s,
-                ),
-            );
-
-            try {
-                const url = `${formValues.service_url}/api/vi/bootstrap/?step=${step.name}`;
-                console.log(`Executing step '${step.name}' with URL: ${url}`);
-
-                const response = await fetch(url, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(formValues),
-                });
-
-                console.log(`Response for step '${step.name}':`, response);
-
-                setResponses((prev) => ({ ...prev, [step.name]: response }));
-                setSteps((prev) =>
-                    prev.map((s) =>
-                        s.name === step.name ? { ...s, state: "completed" } : s,
-                    ),
-                );
-                finalMessage_checkAndShow(step, response);
-            } catch (error) {
-                console.error(`Error during step '${step.name}':`, error);
-                break;
-            }
-        }
+        await executeStates(
+            formValues,
+            steps,
+            setSteps,
+            setResponses,
+            setCompletionMessage,
+        );
     };
 
     const handleSubwayStopClick = (stepIndex: number): void => {
-        const step = steps.find((s) => s.id === stepIndex + 1); // Adjust for zero-based index
+        const step = steps.find((s) => s.id === stepIndex + 1);
         if (step) {
-            const stepName = step.name;
-            const response = responses[stepName];
+            const response = responses[step.name];
             if (response) {
-                setModalContent((prev) =>
-                    prev === response ? null : { ...response, step: stepName },
-                );
-                setModalOpen((prev) => !prev);
+                setModalContent(JSON.stringify(response, null, 2)); // Format the JSON for readability
+                setModalOpen(true);
+            } else {
+                setModalContent(`No response available for step: ${step.name}`);
+                setModalOpen(true);
             }
         }
     };
 
-    const getFieldExplanation = (field: string): string => {
-        const explanations: Record<string, string> = {
-            plugin_title:
-                "Provide a title for this project and all its files. By convention, this title is prefixed with 'pl-', e.g., 'pl-brainSurfaceAnalysis'.",
-            scriptname:
-                "Specify the Python script name for this plugin. This will be the file you can start to edit when you clone this repository, e.g., brainSurfaceAnalysis.",
-            description:
-                "Briefly describe the plugin's functionality in a sentence, e.g., 'This plugin determines areas of high curvature on a brain surface mesh reconstruction.'",
-            organization:
-                "Enter your organization's name, e.g., Boston Children's Hospital.",
-            email: "Your email address.",
-            github_token:
-                "Enter your GitHub Personal Access Token. Only required if you want this built in your personal GitHub account.",
-            service_url:
-                "The Service URL is the web endpoint controlling this process. Usually, no changes are needed.",
-        };
-        return explanations[field] || "";
+    const handlePluginTitleFocus = (): void => {
+        const gitCommitResponse = responses["gitCommit"];
+        if (gitCommitResponse?.status === true) {
+            setModalContent("Hit Enter to clear page or hit Esc");
+            setModalOpen(true);
+        }
     };
+
+    const resetPage = (): void => {
+        setFormValues(initialFormValues);
+        setSteps(initialSteps);
+        setResponses(initialResponses);
+        setCompletionMessage(null);
+        setModalOpen(false);
+    };
+
+    const handleModalKeydown = (e: KeyboardEvent): void => {
+        if (e.key === "Enter") {
+            resetPage();
+        } else if (e.key === "Escape") {
+            setModalOpen(false);
+        }
+    };
+
+    useEffect(() => {
+        if (modalOpen) {
+            window.addEventListener("keydown", handleModalKeydown);
+        } else {
+            window.removeEventListener("keydown", handleModalKeydown);
+        }
+
+        return () => {
+            window.removeEventListener("keydown", handleModalKeydown);
+        };
+    }, [modalOpen]);
 
     return (
         <div className="app-container">
@@ -157,75 +127,18 @@ const App: React.FC = () => {
                     get started coding your ChRIS application! Fill in the form
                     and hit "Submit".
                 </p>
-                <form onSubmit={handleSubmit} className="padded-form">
-                    <h2>Factory Details</h2>
-                    <div className="form-row faded">
-                        <label htmlFor="service_url" className="form-label">
-                            Service URL:
-                        </label>
-                        <div className="form-input-container">
-                            <input
-                                type="text"
-                                id="service_url"
-                                name="service_url"
-                                placeholder="Service URL"
-                                value={formValues.service_url}
-                                onChange={handleChange}
-                                className="form-input"
-                            />
-                            <p className="form-help-text">
-                                {getFieldExplanation("service_url")}
-                            </p>
-                        </div>
-                    </div>
-                    <h2>Plugin Meta Data</h2>
-                    {Object.entries(formValues)
-                        .filter(([key]) => key !== "service_url")
-                        .map(([key, value]) => (
-                            <div
-                                key={key}
-                                className={`form-row ${key === "github_token" ? "faded" : ""}`}
-                            >
-                                <label htmlFor={key} className="form-label">
-                                    {key
-                                        .replace(/_/g, " ")
-                                        .replace(/\b\w/g, (char) =>
-                                            char.toUpperCase(),
-                                        )}
-                                    :
-                                </label>
-                                <div className="form-input-container">
-                                    <input
-                                        type={
-                                            key === "github_token"
-                                                ? "password"
-                                                : "text"
-                                        }
-                                        id={key}
-                                        name={key}
-                                        placeholder={key}
-                                        value={value}
-                                        onChange={handleChange}
-                                        className="form-input"
-                                    />
-                                    <p className="form-help-text">
-                                        {getFieldExplanation(key)}
-                                    </p>
-                                </div>
-                            </div>
-                        ))}
-                    <button type="submit" className="form-submit">
-                        Submit
-                    </button>
-                </form>
+                <Form
+                    formValues={formValues}
+                    onChange={handleChange}
+                    onSubmit={handleSubmit}
+                    onFocusPluginTitle={handlePluginTitleFocus}
+                />
                 <SubwaySteps
                     steps={steps}
                     onStepClick={handleSubwayStopClick}
                 />
                 {completionMessage && (
-                    <div className="completion-message">
-                        <pre>{completionMessage}</pre>
-                    </div>
+                    <CompletionMessage asciidoc={completionMessage} />
                 )}
                 <Modal
                     isOpen={modalOpen}
