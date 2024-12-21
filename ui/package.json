@@ -21,7 +21,9 @@
         "react-dom": "^19.0.0",
         "typescript": "^5.7.2",
         "vite": "^6.0.3",
-        "react-syntax-highlighter": "^15.5.0"
+        "react-syntax-highlighter": "^15.5.0",
+        "asciidoctor": "^3.0.0",
+        "react-markdown": "^8.0.3"
     },
     "devDependencies": {
         "@vitejs/plugin-react": "^4.0.0",
