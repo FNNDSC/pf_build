@@ -70,25 +70,6 @@ You can immediately start coding on your main program \`${scriptName}.py\`.
 };
 
 /**
- * Displays a final AsciiDoc message if the last step `gitCommit` is completed successfully.
- */
-export const finalMessage_checkAndShow = (
-    step: Step,
-    response: StateResponse,
-    setCompletionMessage: React.Dispatch<React.SetStateAction<string | null>>,
-    scriptName: string,
-): void => {
-    if (
-        step.name === "gitCommit" &&
-        response.status === true &&
-        response.gitCommit?.repo_url
-    ) {
-        const asciidocMessage = generateCompletionMessage(response, scriptName);
-        setCompletionMessage(asciidocMessage);
-    }
-};
-
-/**
  * Executes the pipeline of steps sequentially, managing state transitions and API interactions.
  */
 export const executeStates = async (
@@ -97,6 +78,11 @@ export const executeStates = async (
     setSteps: React.Dispatch<React.SetStateAction<Step[]>>,
     setResponses: React.Dispatch<
         React.SetStateAction<Record<StateEnum, StateResponse | null>>
+    >,
+    setModalContent: React.Dispatch<React.SetStateAction<string | null>>,
+    setModalOpen: React.Dispatch<React.SetStateAction<boolean>>,
+    setModalContentType: React.Dispatch<
+        React.SetStateAction<"json" | "asciidoc" | "dialog">
     >,
     setCompletionMessage: React.Dispatch<React.SetStateAction<string | null>>,
 ): Promise<void> => {
@@ -130,13 +116,19 @@ export const executeStates = async (
                 ),
             );
 
-            // Check for final message condition
-            finalMessage_checkAndShow(
-                step,
-                response,
-                setCompletionMessage,
-                scriptName,
-            );
+            // If this is the final step, set the completion message
+            if (
+                step.name === "gitCommit" &&
+                response.status === true &&
+                response.gitCommit?.repo_url
+            ) {
+                const asciidocMessage = generateCompletionMessage(
+                    response,
+                    scriptName,
+                );
+                setCompletionMessage(asciidocMessage); // Set the completion message
+                setModalContentType("asciidoc"); // Ensure modal uses AsciiDoc rendering
+            }
         } catch (error) {
             console.error(`Error during step '${step.name}':`, error);
             // Reset the state of the current step to idle on failure

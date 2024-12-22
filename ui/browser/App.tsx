@@ -3,7 +3,6 @@ import Form from "./components/form";
 import { executeStates } from "./control";
 import SubwaySteps from "./components/subwaySteps";
 import Modal from "./components/modal";
-import CompletionMessage from "./components/completionMessage";
 import { Step } from "../types/processSteps";
 import { StateEnum, StateResponse } from "../lib/stateMapping";
 import "./styles/styles.css";
@@ -44,6 +43,9 @@ const App: React.FC = () => {
         useState<Record<StateEnum, StateResponse | null>>(initialResponses);
     const [modalOpen, setModalOpen] = useState(false);
     const [modalContent, setModalContent] = useState<string | null>(null);
+    const [modalContentType, setModalContentType] = useState<
+        "json" | "asciidoc" | "dialog"
+    >("json");
     const [completionMessage, setCompletionMessage] = useState<string | null>(
         null,
     );
@@ -61,6 +63,9 @@ const App: React.FC = () => {
             steps,
             setSteps,
             setResponses,
+            setModalContent,
+            setModalOpen,
+            setModalContentType,
             setCompletionMessage,
         );
     };
@@ -71,49 +76,66 @@ const App: React.FC = () => {
             const response = responses[step.name];
             if (response) {
                 setModalContent(JSON.stringify(response, null, 2)); // Format the JSON for readability
+                setModalContentType("json");
                 setModalOpen(true);
             } else {
                 setModalContent(`No response available for step: ${step.name}`);
+                setModalContentType("json");
                 setModalOpen(true);
             }
+        }
+    };
+
+    const handleNextStepsClick = (): void => {
+        if (completionMessage) {
+            setModalContent(completionMessage);
+            setModalContentType("asciidoc");
+            setModalOpen(true);
         }
     };
 
     const handlePluginTitleFocus = (): void => {
         const gitCommitResponse = responses["gitCommit"];
         if (gitCommitResponse?.status === true) {
-            setModalContent("Hit Enter to clear page or hit Esc");
+            setModalContent("Do you wish to generate a new plugin?");
+            setModalContentType("dialog");
             setModalOpen(true);
         }
+    };
+
+    const handleConfirmNewPlugin = (): void => {
+        resetPage(); // Reset the page or perform required actions
     };
 
     const resetPage = (): void => {
         setFormValues(initialFormValues);
         setSteps(initialSteps);
         setResponses(initialResponses);
-        setCompletionMessage(null);
         setModalOpen(false);
-    };
-
-    const handleModalKeydown = (e: KeyboardEvent): void => {
-        if (e.key === "Enter") {
-            resetPage();
-        } else if (e.key === "Escape") {
-            setModalOpen(false);
-        }
+        setModalContent(null);
+        setCompletionMessage(null);
     };
 
     useEffect(() => {
+        const handleModalKeydown = (e: KeyboardEvent): void => {
+            if (e.key === "Enter" && modalContentType === "dialog") {
+                handleConfirmNewPlugin();
+            } else if (e.key === "Escape") {
+                setModalOpen(false);
+            }
+        };
+
         if (modalOpen) {
             window.addEventListener("keydown", handleModalKeydown);
-        } else {
-            window.removeEventListener("keydown", handleModalKeydown);
         }
-
         return () => {
             window.removeEventListener("keydown", handleModalKeydown);
         };
-    }, [modalOpen]);
+    }, [modalOpen, modalContentType]);
+
+    const isGitCommitCompleted = steps.some(
+        (step) => step.name === "gitCommit" && step.state === "completed",
+    );
 
     return (
         <div className="app-container">
@@ -137,13 +159,20 @@ const App: React.FC = () => {
                     steps={steps}
                     onStepClick={handleSubwayStopClick}
                 />
-                {completionMessage && (
-                    <CompletionMessage asciidoc={completionMessage} />
+                {isGitCommitCompleted && (
+                    <button
+                        className="form-submit"
+                        onClick={handleNextStepsClick}
+                    >
+                        Next Steps
+                    </button>
                 )}
                 <Modal
                     isOpen={modalOpen}
                     onClose={() => setModalOpen(false)}
+                    onConfirm={handleConfirmNewPlugin}
                     content={modalContent}
+                    contentType={modalContentType}
                 />
             </main>
         </div>
@@ -151,3 +180,4 @@ const App: React.FC = () => {
 };
 
 export default App;
+
