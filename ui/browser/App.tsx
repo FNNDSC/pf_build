@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Form from "./components/form";
 import { executeStates } from "./control";
 import SubwaySteps from "./components/subwaySteps";
@@ -120,23 +120,6 @@ const App: React.FC = () => {
         setModalContent(null);
         setCompletionMessage(null);
     };
-
-    useEffect(() => {
-        const handleModalKeydown = (e: KeyboardEvent): void => {
-            if (e.key === "Enter" && modalContentType === "dialog") {
-                handleConfirmNewPlugin();
-            } else if (e.key === "Escape") {
-                setModalOpen(false);
-            }
-        };
-
-        if (modalOpen) {
-            window.addEventListener("keydown", handleModalKeydown);
-        }
-        return () => {
-            window.removeEventListener("keydown", handleModalKeydown);
-        };
-    }, [modalOpen, modalContentType]);
 
     const isGitCommitCompleted = steps.some(
         (step) => step.name === "gitCommit" && step.state === "completed",

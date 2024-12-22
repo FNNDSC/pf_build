@@ -1,19 +1,25 @@
-import React, { createContext, useState, useContext } from "react";
+import React, {
+    createContext,
+    useContext,
+    useState,
+    Dispatch,
+    SetStateAction,
+} from "react";
 
-interface ModalContextProps {
+interface ModalContextType {
     modalOpen: boolean;
+    setModalOpen: Dispatch<SetStateAction<boolean>>;
     modalContent: string | null;
+    setModalContent: Dispatch<SetStateAction<string | null>>;
     modalContentType: "json" | "asciidoc" | "dialog";
-    setModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
-    setModalContent: React.Dispatch<React.SetStateAction<string | null>>;
-    setModalContentType: React.Dispatch<
-        React.SetStateAction<"json" | "asciidoc" | "dialog">
+    setModalContentType: Dispatch<
+        SetStateAction<"json" | "asciidoc" | "dialog">
     >;
 }
 
-const ModalContext = createContext<ModalContextProps | undefined>(undefined);
+const ModalContext = createContext<ModalContextType | undefined>(undefined);
 
-export const ModalProvider: React.FC<{ children: React.ReactNode }> = ({
+export const ModalProvider: React.FC<React.PropsWithChildren> = ({
     children,
 }) => {
     const [modalOpen, setModalOpen] = useState(false);
@@ -26,10 +32,10 @@ export const ModalProvider: React.FC<{ children: React.ReactNode }> = ({
         <ModalContext.Provider
             value={{
                 modalOpen,
-                modalContent,
-                modalContentType,
                 setModalOpen,
+                modalContent,
                 setModalContent,
+                modalContentType,
                 setModalContentType,
             }}
         >
@@ -38,7 +44,7 @@ export const ModalProvider: React.FC<{ children: React.ReactNode }> = ({
     );
 };
 
-export const useModal = (): ModalContextProps => {
+export const useModal = (): ModalContextType => {
     const context = useContext(ModalContext);
     if (!context) {
         throw new Error("useModal must be used within a ModalProvider");
