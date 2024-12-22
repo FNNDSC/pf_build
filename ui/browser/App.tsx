@@ -5,6 +5,7 @@ import SubwaySteps from "./components/subwaySteps";
 import Modal from "./components/modal";
 import { Step } from "../types/processSteps";
 import { StateEnum, StateResponse } from "../lib/stateMapping";
+import { useModal } from "./components/modalContext";
 import "./styles/styles.css";
 import logo from "../images/ChRISlogo-color.svg";
 
@@ -41,14 +42,18 @@ const App: React.FC = () => {
     const [steps, setSteps] = useState<Step[]>(initialSteps);
     const [responses, setResponses] =
         useState<Record<StateEnum, StateResponse | null>>(initialResponses);
-    const [modalOpen, setModalOpen] = useState(false);
-    const [modalContent, setModalContent] = useState<string | null>(null);
-    const [modalContentType, setModalContentType] = useState<
-        "json" | "asciidoc" | "dialog"
-    >("json");
     const [completionMessage, setCompletionMessage] = useState<string | null>(
         null,
     );
+
+    const {
+        modalOpen,
+        modalContent,
+        modalContentType,
+        setModalOpen,
+        setModalContent,
+        setModalContentType,
+    } = useModal();
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
         const { name, value } = e.target;
@@ -167,17 +172,10 @@ const App: React.FC = () => {
                         Next Steps
                     </button>
                 )}
-                <Modal
-                    isOpen={modalOpen}
-                    onClose={() => setModalOpen(false)}
-                    onConfirm={handleConfirmNewPlugin}
-                    content={modalContent}
-                    contentType={modalContentType}
-                />
+                <Modal />
             </main>
         </div>
     );
 };
 
 export default App;
-

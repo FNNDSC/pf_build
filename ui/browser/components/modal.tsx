@@ -1,23 +1,13 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Asciidoctor from "@asciidoctor/core";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { tomorrow as theme } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { useModal } from "./modalContext";
 
-interface ModalProps {
-    isOpen: boolean;
-    onClose: () => void;
-    onConfirm?: () => void; // Optional handler for dialog confirmations
-    content: string | null;
-    contentType: "json" | "asciidoc" | "dialog";
-}
+const Modal: React.FC = () => {
+    const { modalOpen, modalContent, modalContentType, setModalOpen } =
+        useModal();
 
-const Modal: React.FC<ModalProps> = ({
-    isOpen,
-    onClose,
-    onConfirm,
-    content,
-    contentType,
-}) => {
     const [isMaximized, setIsMaximized] = useState(false);
     const modalRef = useRef<HTMLDivElement | null>(null);
     const [dragging, setDragging] = useState(false);
@@ -49,11 +39,11 @@ const Modal: React.FC<ModalProps> = ({
 
     const asciidoctor = Asciidoctor();
     const renderedAsciiDoc =
-        contentType === "asciidoc" && content
-            ? asciidoctor.convert(content, { safe: "safe" })
+        modalContentType === "asciidoc" && modalContent
+            ? asciidoctor.convert(modalContent, { safe: "safe" })
             : null;
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (dragging) {
             window.addEventListener("mousemove", handleMouseMove);
             window.addEventListener("mouseup", handleMouseUp);
@@ -67,10 +57,10 @@ const Modal: React.FC<ModalProps> = ({
         };
     }, [dragging]);
 
-    if (!isOpen || !content) return null;
+    if (!modalOpen || !modalContent) return null;
 
     return (
-        <div className="modal-overlay" onClick={onClose}>
+        <div className="modal-overlay" onClick={() => setModalOpen(false)}>
             <div
                 className={`modal-content ${isMaximized ? "maximized" : ""}`}
                 ref={modalRef}
@@ -89,43 +79,40 @@ const Modal: React.FC<ModalProps> = ({
                     />
                     <button
                         className="modal-close-button"
-                        onClick={onClose}
+                        onClick={() => setModalOpen(false)}
                         aria-label="Close modal"
                     />
                 </div>
-                <div className={`modal-body ${contentType}`}>
-                    {contentType === "asciidoc" && renderedAsciiDoc && (
+                <div className={`modal-body ${modalContentType}`}>
+                    {modalContentType === "asciidoc" && renderedAsciiDoc && (
                         <div
                             dangerouslySetInnerHTML={{
                                 __html: renderedAsciiDoc,
                             }}
                         />
                     )}
-                    {contentType === "json" && (
+                    {modalContentType === "json" && (
                         <SyntaxHighlighter
                             language="json"
                             style={theme}
                             wrapLongLines={true}
                         >
-                            {content}
+                            {modalContent}
                         </SyntaxHighlighter>
                     )}
-                    {contentType === "dialog" && (
+                    {modalContentType === "dialog" && (
                         <div className="dialog-box">
-                            <p className="dialog-text">{content}</p>
+                            <p className="dialog-text">{modalContent}</p>
                             <div className="dialog-buttons">
                                 <button
                                     className="dialog-button dialog-yes"
-                                    onClick={() => {
-                                        if (onConfirm) onConfirm();
-                                        onClose();
-                                    }}
+                                    onClick={() => setModalOpen(false)}
                                 >
                                     Yes
                                 </button>
                                 <button
                                     className="dialog-button dialog-no"
-                                    onClick={onClose}
+                                    onClick={() => setModalOpen(false)}
                                 >
                                     No
                                 </button>
