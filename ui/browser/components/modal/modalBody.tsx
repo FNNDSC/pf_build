@@ -6,9 +6,16 @@ import { tomorrow as theme } from "react-syntax-highlighter/dist/esm/styles/pris
 interface ModalBodyProps {
     content: string | null;
     contentType: "json" | "asciidoc" | "dialog";
+    onConfirm?: () => void; // Handler for the "Yes" button
+    onCancel?: () => void; // Handler for the "No" button
 }
 
-const ModalBody: React.FC<ModalBodyProps> = ({ content, contentType }) => {
+const ModalBody: React.FC<ModalBodyProps> = ({
+    content,
+    contentType,
+    onConfirm,
+    onCancel,
+}) => {
     const asciidoctor = Asciidoctor();
     const renderedAsciiDoc =
         contentType === "asciidoc" && content
@@ -37,10 +44,18 @@ const ModalBody: React.FC<ModalBodyProps> = ({ content, contentType }) => {
                 <div className="dialog-box">
                     <p className="dialog-text">{content}</p>
                     <div className="dialog-buttons">
-                        <button className="dialog-button dialog-yes">
+                        <button
+                            className="dialog-button dialog-yes"
+                            onClick={onConfirm}
+                        >
                             Yes
                         </button>
-                        <button className="dialog-button dialog-no">No</button>
+                        <button
+                            className="dialog-button dialog-no"
+                            onClick={onCancel}
+                        >
+                            No
+                        </button>
                     </div>
                 </div>
             )}

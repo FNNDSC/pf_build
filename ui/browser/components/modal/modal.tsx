@@ -3,7 +3,11 @@ import { useModal } from "../modalContext";
 import ModalHeader from "./modalHeader";
 import ModalBody from "./modalBody";
 
-const Modal: React.FC = () => {
+interface ModalProps {
+    onResetForm: () => void; // Callback to reset the form
+}
+
+const Modal: React.FC<ModalProps> = ({ onResetForm }) => {
     const { modalOpen, modalContent, modalContentType, setModalOpen } =
         useModal();
     const [isMaximized, setIsMaximized] = useState(false);
@@ -47,6 +51,32 @@ const Modal: React.FC = () => {
         });
     };
 
+    const handleDialogConfirm = () => {
+        console.log("Dialog confirmed");
+        onResetForm(); // Reset the form
+        setModalOpen(false);
+    };
+
+    const handleDialogCancel = () => {
+        console.log("Dialog canceled");
+        setModalOpen(false);
+    };
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === "Escape") {
+            setModalOpen(false); // Close modal on <esc>
+        }
+    };
+
+    useEffect(() => {
+        if (modalOpen) {
+            window.addEventListener("keydown", handleKeyDown);
+        }
+        return () => {
+            window.removeEventListener("keydown", handleKeyDown);
+        };
+    }, [modalOpen]);
+
     useEffect(() => {
         if (dragging) {
             window.addEventListener("mousemove", handleMouseMove);
@@ -80,6 +110,8 @@ const Modal: React.FC = () => {
                 <ModalBody
                     content={modalContent}
                     contentType={modalContentType}
+                    onConfirm={handleDialogConfirm}
+                    onCancel={handleDialogCancel}
                 />
             </div>
         </div>
