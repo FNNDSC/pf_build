@@ -124,7 +124,6 @@ const App: React.FC = () => {
     const isGitCommitCompleted = steps.some(
         (step) => step.name === "gitCommit" && step.state === "completed",
     );
-
     return (
         <div className="app-container">
             <header className="app-header">
@@ -155,7 +154,8 @@ const App: React.FC = () => {
                         Next Steps
                     </button>
                 )}
-                <Modal />
+                {/* Updated Modal component with onResetForm */}
+                <Modal onResetForm={resetPage} />
             </main>
         </div>
     );
