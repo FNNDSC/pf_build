@@ -1,64 +1,31 @@
-import React, { useState } from "react";
+import React from "react";
 import Form from "./components/form";
-import { executeStates } from "./control";
 import SubwaySteps from "./components/subwaySteps";
 import Modal from "./components/modal";
-import { Step } from "../types/processSteps";
-import { StateEnum, StateResponse } from "../lib/stateMapping";
-import { useModal } from "./components/modalContext";
+import { executeStates } from "./control";
+import { useFormState } from "./hooks/useFormState";
+import { useSteps } from "./hooks/useSteps";
+import { useModalState } from "./hooks/useModalState";
 import "./styles/styles.css";
 import logo from "../images/ChRISlogo-color.svg";
 
 const App: React.FC = () => {
-    const initialFormValues = {
-        plugin_title: "",
-        scriptname: "",
-        description: "",
-        organization: "",
-        email: "",
-        github_token: "",
-        service_url: "http://localhost:8000",
-    };
-
-    const initialSteps: Step[] = [
-        { id: 1, name: "repoExists", state: "idle" },
-        { id: 2, name: "repoCreateInitial", state: "idle" },
-        { id: 3, name: "gitClone", state: "idle" },
-        { id: 4, name: "shellEdit", state: "idle" },
-        { id: 5, name: "shellExec", state: "idle" },
-        { id: 6, name: "gitCommit", state: "idle" },
-    ];
-
-    const initialResponses: Record<StateEnum, StateResponse | null> = {
-        repoExists: null,
-        repoCreateInitial: null,
-        gitClone: null,
-        shellEdit: null,
-        shellExec: null,
-        gitCommit: null,
-    };
-
-    const [formValues, setFormValues] = useState(initialFormValues);
-    const [steps, setSteps] = useState<Step[]>(initialSteps);
-    const [responses, setResponses] =
-        useState<Record<StateEnum, StateResponse | null>>(initialResponses);
-    const [completionMessage, setCompletionMessage] = useState<string | null>(
-        null,
-    );
-
+    const { formValues, setFormValues, handleChange } = useFormState();
+    const {
+        steps,
+        responses,
+        setSteps,
+        setResponses,
+        handleSubwayStopClick,
+        isGitCommitCompleted,
+    } = useSteps();
     const {
         modalOpen,
         modalContent,
         modalContentType,
-        setModalOpen,
-        setModalContent,
-        setModalContentType,
-    } = useModal();
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-        const { name, value } = e.target;
-        setFormValues((prev) => ({ ...prev, [name]: value }));
-    };
+        openModal,
+        closeModal,
+    } = useModalState();
 
     const handleSubmit = async (e: React.FormEvent): Promise<void> => {
         e.preventDefault();
@@ -68,62 +35,48 @@ const App: React.FC = () => {
             steps,
             setSteps,
             setResponses,
-            setModalContent,
-            setModalOpen,
-            setModalContentType,
-            setCompletionMessage,
+            openModal,
         );
     };
 
-    const handleSubwayStopClick = (stepIndex: number): void => {
-        const step = steps.find((s) => s.id === stepIndex + 1);
-        if (step) {
-            const response = responses[step.name];
-            if (response) {
-                setModalContent(JSON.stringify(response, null, 2)); // Format the JSON for readability
-                setModalContentType("json");
-                setModalOpen(true);
-            } else {
-                setModalContent(`No response available for step: ${step.name}`);
-                setModalContentType("json");
-                setModalOpen(true);
-            }
-        }
-    };
-
     const handleNextStepsClick = (): void => {
-        if (completionMessage) {
-            setModalContent(completionMessage);
-            setModalContentType("asciidoc");
-            setModalOpen(true);
+        if (responses.gitCommit?.repo_url) {
+            openModal(
+                `Your plugin is ready at ${responses.gitCommit.repo_url}`,
+                "asciidoc"
+            );
         }
-    };
-
-    const handlePluginTitleFocus = (): void => {
-        const gitCommitResponse = responses["gitCommit"];
-        if (gitCommitResponse?.status === true) {
-            setModalContent("Do you wish to generate a new plugin?");
-            setModalContentType("dialog");
-            setModalOpen(true);
-        }
-    };
-
-    const handleConfirmNewPlugin = (): void => {
-        resetPage(); // Reset the page or perform required actions
     };
 
     const resetPage = (): void => {
-        setFormValues(initialFormValues);
-        setSteps(initialSteps);
-        setResponses(initialResponses);
-        setModalOpen(false);
-        setModalContent(null);
-        setCompletionMessage(null);
+        setFormValues({
+            plugin_title: "",
+            scriptname: "",
+            description: "",
+            organization: "",
+            email: "",
+            github_token: "",
+            service_url: "http://localhost:8000",
+        });
+        setSteps([
+            { id: 1, name: "repoExists", state: "idle" },
+            { id: 2, name: "repoCreateInitial", state: "idle" },
+            { id: 3, name: "gitClone", state: "idle" },
+            { id: 4, name: "shellEdit", state: "idle" },
+            { id: 5, name: "shellExec", state: "idle" },
+            { id: 6, name: "gitCommit", state: "idle" },
+        ]);
+        setResponses({
+            repoExists: null,
+            repoCreateInitial: null,
+            gitClone: null,
+            shellEdit: null,
+            shellExec: null,
+            gitCommit: null,
+        });
+        closeModal();
     };
 
-    const isGitCommitCompleted = steps.some(
-        (step) => step.name === "gitCommit" && step.state === "completed",
-    );
     return (
         <div className="app-container">
             <header className="app-header">
@@ -140,7 +93,6 @@ const App: React.FC = () => {
                     formValues={formValues}
                     onChange={handleChange}
                     onSubmit={handleSubmit}
-                    onFocusPluginTitle={handlePluginTitleFocus}
                 />
                 <SubwaySteps
                     steps={steps}
@@ -154,8 +106,13 @@ const App: React.FC = () => {
                         Next Steps
                     </button>
                 )}
-                {/* Updated Modal component with onResetForm */}
-                <Modal onResetForm={resetPage} />
+                <Modal
+                    isOpen={modalOpen}
+                    content={modalContent}
+                    contentType={modalContentType}
+                    onClose={closeModal}
+                    onResetForm={resetPage}
+                />
             </main>
         </div>
     );
