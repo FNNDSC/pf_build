@@ -1,4 +1,3 @@
-// hooks/useFormHandlers.ts
 import { useState } from "react";
 import { executeStates } from "../control";
 import { Step } from "../../types/processSteps";
@@ -23,7 +22,10 @@ interface UseFormHandlersReturn {
         steps: Step[],
         setSteps: React.Dispatch<React.SetStateAction<Step[]>>,
         setResponses: React.Dispatch<React.SetStateAction<Record<string, any>>>,
-        openModal: (message: string, type: string) => void,
+        openModal: (
+            message: string,
+            type: "json" | "asciidoc" | "dialog",
+        ) => void,
         setCompletionMessage: React.Dispatch<
             React.SetStateAction<string | null>
         >,
@@ -51,7 +53,10 @@ const useFormHandlers = (): UseFormHandlersReturn => {
         steps: Step[],
         setSteps: React.Dispatch<React.SetStateAction<Step[]>>,
         setResponses: React.Dispatch<React.SetStateAction<Record<string, any>>>,
-        openModal: (message: string, type: string) => void,
+        openModal: (
+            message: string,
+            type: "json" | "asciidoc" | "dialog",
+        ) => void,
         setCompletionMessage: React.Dispatch<
             React.SetStateAction<string | null>
         >,
@@ -64,12 +69,14 @@ const useFormHandlers = (): UseFormHandlersReturn => {
                 steps,
                 setSteps,
                 setResponses,
-                openModal,
+                (_message: string, _type: string) => {}, // Pass dummy function to prevent immediate modal open
                 setCompletionMessage,
             );
             console.log("Form submission successful");
-        } catch (error) {
+        } catch (err) {
+            const error = err as Error;
             console.error("Error during form submission:", error);
+            openModal(error.message, "dialog");
         }
     };
 
