@@ -70,9 +70,11 @@ const Modal: React.FC<ModalProps> = ({ onResetForm }) => {
 
     useEffect(() => {
         if (modalOpen) {
+            console.log("Modal is opening with content:", modalContent);
             window.addEventListener("keydown", handleKeyDown);
         }
         return () => {
+            console.log("Modal is closing");
             window.removeEventListener("keydown", handleKeyDown);
         };
     }, [modalOpen]);
@@ -90,6 +92,12 @@ const Modal: React.FC<ModalProps> = ({ onResetForm }) => {
             window.removeEventListener("mouseup", handleMouseUp);
         };
     }, [dragging]);
+
+    console.log("Modal rendering: ", {
+        modalOpen,
+        modalContent,
+        modalContentType,
+    });
 
     if (!modalOpen || !modalContent) return null;
 
