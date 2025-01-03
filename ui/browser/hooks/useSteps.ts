@@ -2,7 +2,14 @@ import { useState } from "react";
 import { Step } from "../types/processSteps";
 import { StateEnum, StateResponse } from "../lib/stateMapping";
 
-export const useSteps = () => {
+interface UseStepsProps {
+    openModal: (
+        content: string,
+        contentType: "json" | "asciidoc" | "dialog",
+    ) => void;
+}
+
+export const useSteps = ({ openModal }: UseStepsProps) => {
     const initialSteps: Step[] = [
         { id: 1, name: "repoExists", state: "idle" },
         { id: 2, name: "repoCreateInitial", state: "idle" },
@@ -27,12 +34,20 @@ export const useSteps = () => {
 
     const handleSubwayStopClick = (stepIndex: number): void => {
         const step = steps.find((s) => s.id === stepIndex + 1);
+        console.log(
+            `in handleSubwayStopClick... stepIndex: ${stepIndex}, step: `,
+            step,
+        );
         if (step) {
             const response = responses[step.name];
+            console.log("response = ", response);
             if (response) {
-                console.log("Step response:", response);
+                openModal(JSON.stringify(response, null, 2), "json"); // Trigger modal with JSON response
             } else {
-                console.log(`No response available for step: ${step.name}`);
+                openModal(
+                    `No response available for step: ${step.name}`,
+                    "json",
+                );
             }
         }
     };
@@ -50,4 +65,3 @@ export const useSteps = () => {
         isGitCommitCompleted,
     };
 };
-
