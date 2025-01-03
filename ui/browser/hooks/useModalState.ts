@@ -9,11 +9,17 @@ export const useModalState = () => {
 
     const openModal = (
         content: string,
-        contentType: "json" | "asciidoc" | "dialog"
+        contentType: "json" | "asciidoc" | "dialog",
     ) => {
+        console.log(`opening modal with content... ${content}`);
         setModalContent(content);
         setModalContentType(contentType);
         setModalOpen(true);
+        console.log("State after openModal:", {
+            modalOpen,
+            modalContent,
+            modalContentType,
+        });
     };
 
     const closeModal = () => {
@@ -32,4 +38,3 @@ export const useModalState = () => {
         closeModal,
     };
 };
-
