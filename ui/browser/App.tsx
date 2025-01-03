@@ -3,15 +3,15 @@ import Form from "./components/form";
 import SubwaySteps from "./components/subwaySteps";
 import Modal from "./components/modal";
 import { executeStates } from "./control";
-import { useFormState } from "./hooks/useFormState";
 import { useSteps } from "./hooks/useSteps";
-// import { useModalState } from "./hooks/useModalState";
 import { useModal } from "./components/modalContext";
 import "./styles/styles.css";
+import useFormHandlers from "./hooks/useFormHandlers";
 import logo from "../images/ChRISlogo-color.svg";
 
 const App: React.FC = () => {
-    const { formValues, setFormValues, handleChange } = useFormState();
+    const { formValues, setFormValues, handleChange, handleSubmit } =
+        useFormHandlers();
     const { openModal, closeModal } = useModal();
 
     const {
@@ -27,19 +27,6 @@ const App: React.FC = () => {
         null,
     );
 
-    const handleSubmit = async (e: React.FormEvent): Promise<void> => {
-        e.preventDefault();
-        console.log("Form submitted with values:", formValues);
-        await executeStates(
-            formValues,
-            steps,
-            setSteps,
-            setResponses,
-            openModal,
-            setCompletionMessage, // Correctly passing completion message handler
-        );
-    };
-
     const handleNextStepsClick = (): void => {
         if (completionMessage) {
             openModal(completionMessage, "asciidoc");
@@ -49,11 +36,14 @@ const App: React.FC = () => {
     const handlePluginTitleFocus = (): void => {
         const gitCommitResponse = responses["gitCommit"];
         if (gitCommitResponse?.status === true) {
-            openModal("Do you wish to generate a new plugin?", "dialog");
+            openModal("Do you wish to generate a new plugin?", "dialog", {
+                onConfirm: resetPage, // Execute resetPage only on confirmation
+            });
         }
     };
 
     const resetPage = (): void => {
+        // Reset form values to defaults
         setFormValues({
             plugin_title: "",
             scriptname: "",
@@ -63,6 +53,8 @@ const App: React.FC = () => {
             github_token: "",
             service_url: "http://localhost:8000",
         });
+
+        // Reset subway steps
         setSteps([
             { id: 1, name: "repoExists", state: "idle" },
             { id: 2, name: "repoCreateInitial", state: "idle" },
@@ -71,6 +63,8 @@ const App: React.FC = () => {
             { id: 5, name: "shellExec", state: "idle" },
             { id: 6, name: "gitCommit", state: "idle" },
         ]);
+
+        // Reset responses
         setResponses({
             repoExists: null,
             repoCreateInitial: null,
@@ -79,6 +73,8 @@ const App: React.FC = () => {
             shellExec: null,
             gitCommit: null,
         });
+
+        // Close the modal and reset the completion message
         closeModal();
         setCompletionMessage(null);
     };
@@ -98,8 +94,17 @@ const App: React.FC = () => {
                 <Form
                     formValues={formValues}
                     onChange={handleChange}
-                    onSubmit={handleSubmit}
-                    onFocusPluginTitle={handlePluginTitleFocus} // Correctly passing focus handler
+                    onSubmit={(e) =>
+                        handleSubmit(
+                            e,
+                            steps,
+                            setSteps,
+                            setResponses,
+                            openModal,
+                            setCompletionMessage,
+                        )
+                    }
+                    onFocusPluginTitle={handlePluginTitleFocus}
                 />
                 <SubwaySteps
                     steps={steps}
@@ -113,9 +118,7 @@ const App: React.FC = () => {
                         Next Steps
                     </button>
                 )}
-                <Modal
-                    onResetForm={resetPage} // Correctly passing the reset function
-                />
+                <Modal onResetForm={resetPage} />
             </main>
         </div>
     );
