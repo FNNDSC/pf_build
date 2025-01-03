@@ -46,13 +46,17 @@ const ModalBody: React.FC<ModalBodyProps> = ({
                     <div className="dialog-buttons">
                         <button
                             className="dialog-button dialog-yes"
-                            onClick={onConfirm}
+                            onClick={() => {
+                                onConfirm?.();
+                            }}
                         >
                             Yes
                         </button>
                         <button
                             className="dialog-button dialog-no"
-                            onClick={onCancel}
+                            onClick={() => {
+                                onCancel?.();
+                            }}
                         >
                             No
                         </button>
