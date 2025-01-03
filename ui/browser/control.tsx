@@ -2,6 +2,11 @@ import { Step } from "../types/processSteps";
 import { StateEnum, StateResponse } from "../lib/stateMapping";
 import { fetch } from "../lib/stateMapping";
 
+type OpenModalHandler = (
+    content: string,
+    contentType: "json" | "asciidoc" | "dialog",
+) => void;
+
 /**
  * Generates an AsciiDoc completion message for the `gitCommit` step.
  */
@@ -79,17 +84,12 @@ export const executeStates = async (
     setResponses: React.Dispatch<
         React.SetStateAction<Record<StateEnum, StateResponse | null>>
     >,
-    setModalContent: React.Dispatch<React.SetStateAction<string | null>>,
-    setModalOpen: React.Dispatch<React.SetStateAction<boolean>>,
-    setModalContentType: React.Dispatch<
-        React.SetStateAction<"json" | "asciidoc" | "dialog">
-    >,
+    openModal: OpenModalHandler, // Unified modal handler
     setCompletionMessage: React.Dispatch<React.SetStateAction<string | null>>,
 ): Promise<void> => {
-    const scriptName = formValues.scriptname; // Use scriptname directly from formValues
+    const scriptName = formValues.scriptname;
 
     for (const step of steps) {
-        // Set the current step to active
         setSteps((prev) =>
             prev.map((s) =>
                 s.name === step.name ? { ...s, state: "active" } : s,
@@ -108,7 +108,6 @@ export const executeStates = async (
 
             console.log(`Response for step '${step.name}':`, response);
 
-            // Update responses and mark the step as completed
             setResponses((prev) => ({ ...prev, [step.name]: response }));
             setSteps((prev) =>
                 prev.map((s) =>
@@ -116,7 +115,6 @@ export const executeStates = async (
                 ),
             );
 
-            // If this is the final step, set the completion message
             if (
                 step.name === "gitCommit" &&
                 response.status === true &&
@@ -126,12 +124,11 @@ export const executeStates = async (
                     response,
                     scriptName,
                 );
-                setCompletionMessage(asciidocMessage); // Set the completion message
-                setModalContentType("asciidoc"); // Ensure modal uses AsciiDoc rendering
+                setCompletionMessage(asciidocMessage);
+                openModal(asciidocMessage, "asciidoc");
             }
         } catch (error) {
             console.error(`Error during step '${step.name}':`, error);
-            // Reset the state of the current step to idle on failure
             setSteps((prev) =>
                 prev.map((s) =>
                     s.name === step.name ? { ...s, state: "idle" } : s,
