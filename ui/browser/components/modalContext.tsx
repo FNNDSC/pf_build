@@ -15,6 +15,8 @@ interface ModalContextType {
     setModalContentType: Dispatch<
         SetStateAction<"json" | "asciidoc" | "dialog">
     >;
+    openModal: (content: string, type: "json" | "asciidoc" | "dialog") => void;
+    closeModal: () => void;
 }
 
 const ModalContext = createContext<ModalContextType | undefined>(undefined);
@@ -28,6 +30,20 @@ export const ModalProvider: React.FC<React.PropsWithChildren> = ({
         "json" | "asciidoc" | "dialog"
     >("json");
 
+    const openModal = (
+        content: string,
+        type: "json" | "asciidoc" | "dialog",
+    ) => {
+        setModalContent(content);
+        setModalContentType(type);
+        setModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setModalOpen(false);
+        setModalContent(null);
+    };
+
     return (
         <ModalContext.Provider
             value={{
@@ -37,6 +53,8 @@ export const ModalProvider: React.FC<React.PropsWithChildren> = ({
                 setModalContent,
                 modalContentType,
                 setModalContentType,
+                openModal,
+                closeModal,
             }}
         >
             {children}
