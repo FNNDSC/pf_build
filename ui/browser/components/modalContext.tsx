@@ -4,6 +4,7 @@ import React, {
     useState,
     Dispatch,
     SetStateAction,
+    PropsWithChildren,
 } from "react";
 
 interface ModalContextType {
@@ -15,15 +16,17 @@ interface ModalContextType {
     setModalContentType: Dispatch<
         SetStateAction<"json" | "asciidoc" | "dialog">
     >;
-    openModal: (content: string, type: "json" | "asciidoc" | "dialog") => void;
+    openModal: (
+        content: string,
+        contentType: "json" | "asciidoc" | "dialog",
+        options?: { onConfirm?: () => void },
+    ) => void;
     closeModal: () => void;
 }
 
 const ModalContext = createContext<ModalContextType | undefined>(undefined);
 
-export const ModalProvider: React.FC<React.PropsWithChildren> = ({
-    children,
-}) => {
+export const ModalProvider: React.FC<PropsWithChildren> = ({ children }) => {
     const [modalOpen, setModalOpen] = useState(false);
     const [modalContent, setModalContent] = useState<string | null>(null);
     const [modalContentType, setModalContentType] = useState<
@@ -32,33 +35,40 @@ export const ModalProvider: React.FC<React.PropsWithChildren> = ({
 
     const openModal = (
         content: string,
-        type: "json" | "asciidoc" | "dialog",
-    ) => {
+        contentType: "json" | "asciidoc" | "dialog",
+        options?: { onConfirm?: () => void },
+    ): void => {
         setModalContent(content);
-        setModalContentType(type);
+        setModalContentType(contentType);
         setModalOpen(true);
+        if (options?.onConfirm) {
+            // Store or use onConfirm callback as needed for modal buttons
+            modalOnConfirm.current = options.onConfirm;
+        }
     };
 
-    const closeModal = () => {
+    const closeModal = (): void => {
         setModalOpen(false);
         setModalContent(null);
+        setModalContentType("json");
+        modalOnConfirm.current = null; // Clear onConfirm when closing modal
+    };
+
+    const modalOnConfirm = React.useRef<(() => void) | null>(null);
+
+    const value = {
+        modalOpen,
+        setModalOpen,
+        modalContent,
+        setModalContent,
+        modalContentType,
+        setModalContentType,
+        openModal,
+        closeModal,
     };
 
     return (
-        <ModalContext.Provider
-            value={{
-                modalOpen,
-                setModalOpen,
-                modalContent,
-                setModalContent,
-                modalContentType,
-                setModalContentType,
-                openModal,
-                closeModal,
-            }}
-        >
-            {children}
-        </ModalContext.Provider>
+        <ModalContext.Provider value={value}>{children}</ModalContext.Provider>
     );
 };
 
