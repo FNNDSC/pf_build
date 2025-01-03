@@ -1,16 +1,19 @@
-import React from "react";
+import React, { useState } from "react";
 import Form from "./components/form";
 import SubwaySteps from "./components/subwaySteps";
 import Modal from "./components/modal";
 import { executeStates } from "./control";
 import { useFormState } from "./hooks/useFormState";
 import { useSteps } from "./hooks/useSteps";
-import { useModalState } from "./hooks/useModalState";
+// import { useModalState } from "./hooks/useModalState";
+import { useModal } from "./components/modalContext";
 import "./styles/styles.css";
 import logo from "../images/ChRISlogo-color.svg";
 
 const App: React.FC = () => {
     const { formValues, setFormValues, handleChange } = useFormState();
+    const { openModal, closeModal } = useModal();
+
     const {
         steps,
         responses,
@@ -18,14 +21,11 @@ const App: React.FC = () => {
         setResponses,
         handleSubwayStopClick,
         isGitCommitCompleted,
-    } = useSteps();
-    const {
-        modalOpen,
-        modalContent,
-        modalContentType,
-        openModal,
-        closeModal,
-    } = useModalState();
+    } = useSteps({ openModal });
+
+    const [completionMessage, setCompletionMessage] = useState<string | null>(
+        null,
+    );
 
     const handleSubmit = async (e: React.FormEvent): Promise<void> => {
         e.preventDefault();
@@ -36,15 +36,20 @@ const App: React.FC = () => {
             setSteps,
             setResponses,
             openModal,
+            setCompletionMessage, // Correctly passing completion message handler
         );
     };
 
     const handleNextStepsClick = (): void => {
-        if (responses.gitCommit?.repo_url) {
-            openModal(
-                `Your plugin is ready at ${responses.gitCommit.repo_url}`,
-                "asciidoc"
-            );
+        if (completionMessage) {
+            openModal(completionMessage, "asciidoc");
+        }
+    };
+
+    const handlePluginTitleFocus = (): void => {
+        const gitCommitResponse = responses["gitCommit"];
+        if (gitCommitResponse?.status === true) {
+            openModal("Do you wish to generate a new plugin?", "dialog");
         }
     };
 
@@ -75,6 +80,7 @@ const App: React.FC = () => {
             gitCommit: null,
         });
         closeModal();
+        setCompletionMessage(null);
     };
 
     return (
@@ -93,6 +99,7 @@ const App: React.FC = () => {
                     formValues={formValues}
                     onChange={handleChange}
                     onSubmit={handleSubmit}
+                    onFocusPluginTitle={handlePluginTitleFocus} // Correctly passing focus handler
                 />
                 <SubwaySteps
                     steps={steps}
@@ -107,11 +114,7 @@ const App: React.FC = () => {
                     </button>
                 )}
                 <Modal
-                    isOpen={modalOpen}
-                    content={modalContent}
-                    contentType={modalContentType}
-                    onClose={closeModal}
-                    onResetForm={resetPage}
+                    onResetForm={resetPage} // Correctly passing the reset function
                 />
             </main>
         </div>
