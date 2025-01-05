@@ -4,20 +4,27 @@ import ModalHeader from "./modalHeader";
 import ModalBody from "./modalBody";
 
 interface ModalProps {
-    onResetForm: () => void; // Callback to reset the form
+    onResetForm: () => void;
 }
 
 const Modal: React.FC<ModalProps> = ({ onResetForm }) => {
-    const { modalOpen, modalContent, modalContentType, setModalOpen } =
-        useModal();
+    const {
+        modalOpen,
+        modalContent,
+        modalContentType,
+        setModalOpen,
+        modalValidationOptions,
+        modalOnConfirm,
+        closeModal,
+    } = useModal();
+
     const [isMaximized, setIsMaximized] = useState(false);
     const modalRef = useRef<HTMLDivElement | null>(null);
     const [dragging, setDragging] = useState(false);
     const [offset, setOffset] = useState({ x: 0, y: 0 });
 
-    // Handle Dragging
     const handleMouseDown = (e: React.MouseEvent) => {
-        if (isMaximized) return; // Disable dragging when maximized
+        if (isMaximized) return;
         setDragging(true);
         const rect = modalRef.current?.getBoundingClientRect();
         if (rect) {
@@ -26,7 +33,7 @@ const Modal: React.FC<ModalProps> = ({ onResetForm }) => {
                 y: e.clientY - rect.top,
             });
         }
-        document.body.classList.add("no-select"); // Disable text selection during drag
+        document.body.classList.add("no-select");
     };
 
     const handleMouseMove = (e: MouseEvent) => {
@@ -37,13 +44,12 @@ const Modal: React.FC<ModalProps> = ({ onResetForm }) => {
 
     const handleMouseUp = () => {
         setDragging(false);
-        document.body.classList.remove("no-select"); // Re-enable text selection
+        document.body.classList.remove("no-select");
     };
 
     const handleMaximizeToggle = () => {
         setIsMaximized((prev) => {
             if (!prev && modalRef.current) {
-                // Reposition the modal to the top-left corner of the viewport
                 modalRef.current.style.left = "0px";
                 modalRef.current.style.top = "0px";
             }
@@ -52,29 +58,31 @@ const Modal: React.FC<ModalProps> = ({ onResetForm }) => {
     };
 
     const handleDialogConfirm = () => {
-        console.log("Dialog confirmed");
-        onResetForm(); // Reset the form
+        if (modalContentType === "validation") {
+            if (modalOnConfirm) {
+                modalOnConfirm();
+            }
+        } else {
+            onResetForm();
+        }
         setModalOpen(false);
     };
 
     const handleDialogCancel = () => {
-        console.log("Dialog canceled");
-        setModalOpen(false);
+        closeModal();
     };
 
     const handleKeyDown = (e: KeyboardEvent) => {
         if (e.key === "Escape") {
-            setModalOpen(false); // Close modal on <esc>
+            closeModal();
         }
     };
 
     useEffect(() => {
         if (modalOpen) {
-            console.log("Modal is opening with content:", modalContent);
             window.addEventListener("keydown", handleKeyDown);
         }
         return () => {
-            console.log("Modal is closing");
             window.removeEventListener("keydown", handleKeyDown);
         };
     }, [modalOpen]);
@@ -93,16 +101,10 @@ const Modal: React.FC<ModalProps> = ({ onResetForm }) => {
         };
     }, [dragging]);
 
-    console.log("Modal rendering: ", {
-        modalOpen,
-        modalContent,
-        modalContentType,
-    });
-
     if (!modalOpen || !modalContent) return null;
 
     return (
-        <div className="modal-overlay" onClick={() => setModalOpen(false)}>
+        <div className="modal-overlay" onClick={handleDialogCancel}>
             <div
                 className={`modal-content ${isMaximized ? "maximized" : ""}`}
                 ref={modalRef}
@@ -111,7 +113,7 @@ const Modal: React.FC<ModalProps> = ({ onResetForm }) => {
             >
                 <ModalHeader
                     isMaximized={isMaximized}
-                    onClose={() => setModalOpen(false)}
+                    onClose={handleDialogCancel}
                     onMaximizeToggle={handleMaximizeToggle}
                     onMouseDown={handleMouseDown}
                 />
@@ -120,6 +122,7 @@ const Modal: React.FC<ModalProps> = ({ onResetForm }) => {
                     contentType={modalContentType}
                     onConfirm={handleDialogConfirm}
                     onCancel={handleDialogCancel}
+                    validationOptions={modalValidationOptions || undefined}
                 />
             </div>
         </div>

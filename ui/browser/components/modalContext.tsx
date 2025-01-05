@@ -7,19 +7,30 @@ import React, {
     PropsWithChildren,
 } from "react";
 
+interface ValidationOptions {
+    onEdit: () => void;
+    canContinue: boolean;
+}
+
+interface ModalOptions {
+    onConfirm?: () => void;
+    validation?: ValidationOptions;
+}
+
 interface ModalContextType {
     modalOpen: boolean;
     setModalOpen: Dispatch<SetStateAction<boolean>>;
     modalContent: string | null;
     setModalContent: Dispatch<SetStateAction<string | null>>;
-    modalContentType: "json" | "asciidoc" | "dialog";
+    modalContentType: "json" | "asciidoc" | "dialog" | "validation";
     setModalContentType: Dispatch<
-        SetStateAction<"json" | "asciidoc" | "dialog">
+        SetStateAction<"json" | "asciidoc" | "dialog" | "validation">
     >;
+    modalValidationOptions: ValidationOptions | null;
     openModal: (
         content: string,
-        contentType: "json" | "asciidoc" | "dialog",
-        options?: { onConfirm?: () => void },
+        contentType: "json" | "asciidoc" | "dialog" | "validation",
+        options?: ModalOptions,
     ) => void;
     closeModal: () => void;
 }
@@ -30,31 +41,41 @@ export const ModalProvider: React.FC<PropsWithChildren> = ({ children }) => {
     const [modalOpen, setModalOpen] = useState(false);
     const [modalContent, setModalContent] = useState<string | null>(null);
     const [modalContentType, setModalContentType] = useState<
-        "json" | "asciidoc" | "dialog"
+        "json" | "asciidoc" | "dialog" | "validation"
     >("json");
+    const [modalValidationOptions, setModalValidationOptions] =
+        useState<ValidationOptions | null>(null);
+    const modalOnConfirm = React.useRef<(() => void) | null>(null);
 
     const openModal = (
         content: string,
-        contentType: "json" | "asciidoc" | "dialog",
-        options?: { onConfirm?: () => void },
+        contentType: "json" | "asciidoc" | "dialog" | "validation",
+        options?: ModalOptions,
     ): void => {
         setModalContent(content);
         setModalContentType(contentType);
         setModalOpen(true);
         if (options?.onConfirm) {
-            // Store or use onConfirm callback as needed for modal buttons
             modalOnConfirm.current = options.onConfirm;
+        }
+        if (options?.validation) {
+            setModalValidationOptions(options.validation);
         }
     };
 
     const closeModal = (): void => {
+        if (
+            modalContentType === "validation" &&
+            modalValidationOptions?.onEdit
+        ) {
+            modalValidationOptions.onEdit();
+        }
         setModalOpen(false);
         setModalContent(null);
         setModalContentType("json");
-        modalOnConfirm.current = null; // Clear onConfirm when closing modal
+        setModalValidationOptions(null);
+        modalOnConfirm.current = null;
     };
-
-    const modalOnConfirm = React.useRef<(() => void) | null>(null);
 
     const value = {
         modalOpen,
@@ -63,6 +84,7 @@ export const ModalProvider: React.FC<PropsWithChildren> = ({ children }) => {
         setModalContent,
         modalContentType,
         setModalContentType,
+        modalValidationOptions,
         openModal,
         closeModal,
     };

@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useRef } from "react";
+import { useFormValidation } from "../../hooks/useFormValidation";
 
 interface FormProps {
     formValues: Record<string, string>;
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     onSubmit: (e: React.FormEvent) => void;
-    onFocusPluginTitle: () => void; // New prop for handling plugin_title focus
+    onFocusPluginTitle: () => void;
 }
 
 const Form: React.FC<FormProps> = ({
@@ -13,6 +14,9 @@ const Form: React.FC<FormProps> = ({
     onSubmit,
     onFocusPluginTitle,
 }) => {
+    const { validatePluginTitle } = useFormValidation();
+    const pluginTitleInputRef = useRef<HTMLInputElement>(null);
+
     const getFieldExplanation = (field: string): string => {
         const explanations: Record<string, string> = {
             plugin_title:
@@ -30,6 +34,16 @@ const Form: React.FC<FormProps> = ({
                 "The web endpoint controlling this process. You typically won't need to change this.",
         };
         return explanations[field] || "";
+    };
+
+    const handlePluginTitleBlur = async () => {
+        if (pluginTitleInputRef.current) {
+            await validatePluginTitle(formValues.plugin_title, () => {
+                if (pluginTitleInputRef.current) {
+                    pluginTitleInputRef.current.focus();
+                }
+            });
+        }
     };
 
     return (
@@ -80,7 +94,17 @@ const Form: React.FC<FormProps> = ({
                                     key === "plugin_title"
                                         ? onFocusPluginTitle
                                         : undefined
-                                } // Apply focus handler to plugin_title
+                                }
+                                onBlur={
+                                    key === "plugin_title"
+                                        ? handlePluginTitleBlur
+                                        : undefined
+                                }
+                                ref={
+                                    key === "plugin_title"
+                                        ? pluginTitleInputRef
+                                        : undefined
+                                }
                                 className="form-input"
                             />
                             <p className="form-help-text">

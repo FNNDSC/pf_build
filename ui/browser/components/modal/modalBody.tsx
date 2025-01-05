@@ -3,11 +3,17 @@ import Asciidoctor from "@asciidoctor/core";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { tomorrow as theme } from "react-syntax-highlighter/dist/esm/styles/prism";
 
+interface ValidationOptions {
+    onEdit: () => void;
+    canContinue: boolean;
+}
+
 interface ModalBodyProps {
     content: string | null;
-    contentType: "json" | "asciidoc" | "dialog";
-    onConfirm?: () => void; // Handler for the "Yes" button
-    onCancel?: () => void; // Handler for the "No" button
+    contentType: "json" | "asciidoc" | "dialog" | "validation";
+    onConfirm?: () => void;
+    onCancel?: () => void;
+    validationOptions?: ValidationOptions;
 }
 
 const ModalBody: React.FC<ModalBodyProps> = ({
@@ -15,6 +21,7 @@ const ModalBody: React.FC<ModalBodyProps> = ({
     contentType,
     onConfirm,
     onCancel,
+    validationOptions,
 }) => {
     const asciidoctor = Asciidoctor();
     const renderedAsciiDoc =
@@ -46,19 +53,35 @@ const ModalBody: React.FC<ModalBodyProps> = ({
                     <div className="dialog-buttons">
                         <button
                             className="dialog-button dialog-yes"
-                            onClick={() => {
-                                onConfirm?.();
-                            }}
+                            onClick={onConfirm}
                         >
                             Yes
                         </button>
                         <button
                             className="dialog-button dialog-no"
-                            onClick={() => {
-                                onCancel?.();
-                            }}
+                            onClick={onCancel}
                         >
                             No
+                        </button>
+                    </div>
+                </div>
+            )}
+            {contentType === "validation" && (
+                <div className="dialog-box">
+                    <p className="dialog-text">{content}</p>
+                    <div className="dialog-buttons">
+                        <button
+                            className="dialog-button dialog-yes"
+                            onClick={validationOptions?.onEdit}
+                        >
+                            Edit
+                        </button>
+                        <button
+                            className="dialog-button dialog-no"
+                            onClick={onConfirm}
+                            disabled={!validationOptions?.canContinue}
+                        >
+                            Continue
                         </button>
                     </div>
                 </div>
