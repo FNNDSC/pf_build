@@ -74,6 +74,28 @@ body {
     vertical-align: middle; /* Align watermark text correctly */
 }
 
+/* Invalid input states */
+.form-input.invalid {
+    border-color: #f44336;
+    background-color: rgba(244, 67, 54, 0.1);
+}
+
+.form-input.invalid:focus {
+    outline-color: #f44336;
+    box-shadow: 0 0 0 2px rgba(244, 67, 54, 0.2);
+}
+
+/* Disabled submit button */
+.form-submit:disabled {
+    background-color: #666;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.form-submit:disabled:hover {
+    background-color: #666;
+}
+
 .form-help-text {
     font-size: 0.85rem;
     color: #aaa;
@@ -403,4 +425,20 @@ body {
 
 .dialog-no:hover {
     background-color: #e53935;
+}
+
+.dialog-button:disabled {
+    background-color: #666;
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.dialog-button.dialog-no:disabled {
+    background-color: #666;
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.dialog-button.dialog-no:disabled:hover {
+    background-color: #666;
 }
